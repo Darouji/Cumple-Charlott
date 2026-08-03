@@ -30,6 +30,7 @@ export function PixiScene() {
       app = nextApp;
 
       await nextApp.init({
+        autoStart: true,
         width: Math.max(1, Math.round(bounds.width)),
         height: Math.max(1, Math.round(bounds.height)),
         backgroundAlpha: 0,
