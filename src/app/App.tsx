@@ -5,7 +5,9 @@ import styles from "./App.module.css";
 export function App() {
   return (
     <main className={styles.app}>
+      <div className={styles.forest} aria-hidden="true" />
       <PixiScene />
+      <div className={styles.atmosphere} aria-hidden="true" />
 
       <section className={styles.content} aria-labelledby="invitation-title">
         <div className={styles.glow} aria-hidden="true" />
