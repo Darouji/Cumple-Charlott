@@ -35,7 +35,7 @@
   animation: forest-breathe 22s ease-in-out infinite alternate;
 }
 
-.glade {
+.hiddenScene {
   visibility: hidden;
   opacity: 0;
 }
@@ -92,7 +92,7 @@
   text-wrap: balance;
 }
 
-.enterButton {
+.actionButton {
   justify-self: center;
   min-height: 3rem;
   margin-top: var(--space-6);
@@ -111,7 +111,7 @@
     transform var(--duration-normal) var(--ease-natural);
 }
 
-.enterButton:hover:not(:disabled) {
+.actionButton:hover:not(:disabled) {
   border-color: var(--color-magic-gold);
   box-shadow:
     0 0 2.75rem rgb(183 232 229 / 24%),
@@ -119,34 +119,42 @@
   transform: translateY(-2px);
 }
 
-.enterButton:focus-visible {
+.actionButton:focus-visible {
   outline: 2px solid var(--color-magic-gold-soft);
   outline-offset: 4px;
 }
 
-.enterButton:disabled {
+.actionButton:disabled {
   cursor: default;
 }
 
-.discoveryHint {
+.scenePrompt {
   position: absolute;
   z-index: var(--z-interface);
   bottom: max(var(--space-7), env(safe-area-inset-bottom));
   left: 50%;
+  display: grid;
+  gap: var(--space-5);
+  justify-items: center;
   width: min(85vw, 32rem);
   margin: 0;
+  padding: 0;
   color: var(--color-text-primary);
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 5vw, 2rem);
-  line-height: 1.2;
   text-align: center;
-  text-shadow: 0 0 1.5rem rgb(0 0 0 / 90%);
   visibility: hidden;
   opacity: 0;
   translate: -50% 0;
 }
 
-.discoveryHint:focus {
+.scenePrompt p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 5vw, 2rem);
+  line-height: 1.2;
+  text-shadow: 0 0 1.5rem rgb(0 0 0 / 90%);
+}
+
+.scenePrompt:focus {
   outline: none;
 }
 

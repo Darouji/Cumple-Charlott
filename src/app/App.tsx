@@ -1,22 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 
-import { createForestTransition } from "../animation/createForestTransition";
+import { createSceneTransition } from "../animation/createSceneTransition";
+import stageLandscape from "../assets/forest/fairy-stage-landscape.webp";
+import stagePortrait from "../assets/forest/fairy-stage-portrait.webp";
+import thresholdLandscape from "../assets/forest/forest-threshold-landscape-v2.webp";
+import thresholdPortrait from "../assets/forest/forest-threshold-portrait-v2.webp";
 import gladeLandscape from "../assets/forest/hidden-glade-landscape.webp";
 import gladePortrait from "../assets/forest/hidden-glade-portrait.webp";
-import thresholdLandscape from "../assets/forest/forest-threshold-landscape.webp";
-import thresholdPortrait from "../assets/forest/enchanted-forest.webp";
 import { invitationConfig } from "../config/invitation.config";
 import { PixiScene } from "../scene/PixiScene";
 import styles from "./App.module.css";
 
+type StableScene = "threshold" | "glade" | "stage";
+type SceneState = StableScene | "transitioning";
+
 export function App() {
-  const [scene, setScene] = useState<"threshold" | "transitioning" | "glade">(
-    "threshold",
-  );
+  const [scene, setScene] = useState<SceneState>("threshold");
   const thresholdRef = useRef<HTMLPictureElement>(null);
   const gladeRef = useRef<HTMLPictureElement>(null);
+  const stageRef = useRef<HTMLPictureElement>(null);
   const introductionRef = useRef<HTMLElement>(null);
-  const discoveryHintRef = useRef<HTMLParagraphElement>(null);
+  const discoveryPromptRef = useRef<HTMLElement>(null);
+  const stagePromptRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
@@ -26,35 +31,57 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (scene === "glade") {
-      discoveryHintRef.current?.focus({ preventScroll: true });
-    }
+    const prompt =
+      scene === "glade"
+        ? discoveryPromptRef.current
+        : scene === "stage"
+          ? stagePromptRef.current
+          : null;
+
+    prompt?.focus({ preventScroll: true });
   }, [scene]);
 
-  const enterForest = () => {
-    const threshold = thresholdRef.current;
-    const glade = gladeRef.current;
-    const introduction = introductionRef.current;
-    const discoveryHint = discoveryHintRef.current;
+  const transitionTo = (destination: "glade" | "stage") => {
+    const plan =
+      destination === "glade"
+        ? {
+            from: "threshold" as const,
+            outgoingScene: thresholdRef.current,
+            incomingScene: gladeRef.current,
+            outgoingContent: introductionRef.current,
+            incomingContent: discoveryPromptRef.current,
+          }
+        : {
+            from: "glade" as const,
+            outgoingScene: gladeRef.current,
+            incomingScene: stageRef.current,
+            outgoingContent: discoveryPromptRef.current,
+            incomingContent: stagePromptRef.current,
+          };
 
     if (
-      scene !== "threshold" ||
-      !threshold ||
-      !glade ||
-      !introduction ||
-      !discoveryHint
+      scene !== plan.from ||
+      !plan.outgoingScene ||
+      !plan.incomingScene ||
+      !plan.outgoingContent ||
+      !plan.incomingContent
     ) {
       return;
     }
 
     setScene("transitioning");
-    timelineRef.current = createForestTransition(
-      { threshold, glade, introduction, discoveryHint },
+    timelineRef.current = createSceneTransition(
+      {
+        outgoingScene: plan.outgoingScene,
+        incomingScene: plan.incomingScene,
+        outgoingContent: plan.outgoingContent,
+        incomingContent: plan.incomingContent,
+      },
       {
         reducedMotion: window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches,
-        onComplete: () => setScene("glade"),
+        onComplete: () => setScene(destination),
       },
     );
   };
@@ -72,11 +99,20 @@ export function App() {
 
       <picture
         ref={gladeRef}
-        className={`${styles.forest} ${styles.glade}`}
+        className={`${styles.forest} ${styles.hiddenScene}`}
         aria-hidden="true"
       >
         <source media="(min-aspect-ratio: 4 / 3)" srcSet={gladeLandscape} />
         <img src={gladePortrait} alt="" />
+      </picture>
+
+      <picture
+        ref={stageRef}
+        className={`${styles.forest} ${styles.hiddenScene}`}
+        aria-hidden="true"
+      >
+        <source media="(min-aspect-ratio: 4 / 3)" srcSet={stageLandscape} />
+        <img src={stagePortrait} alt="" />
       </picture>
 
       <PixiScene />
@@ -86,7 +122,7 @@ export function App() {
         ref={introductionRef}
         className={styles.content}
         aria-labelledby="invitation-title"
-        aria-hidden={scene === "glade"}
+        aria-hidden={scene !== "threshold"}
       >
         <div className={styles.glow} aria-hidden="true" />
 
@@ -101,23 +137,40 @@ export function App() {
         </p>
 
         <button
-          className={styles.enterButton}
+          className={styles.actionButton}
           type="button"
-          onClick={enterForest}
+          onClick={() => transitionTo("glade")}
           disabled={scene !== "threshold"}
         >
           Adéntrate en el bosque
         </button>
       </section>
 
-      <p
-        ref={discoveryHintRef}
-        className={styles.discoveryHint}
+      <section
+        ref={discoveryPromptRef}
+        className={styles.scenePrompt}
         tabIndex={-1}
         aria-hidden={scene !== "glade"}
       >
-        Shh… parece que alguien está preparando algo.
-      </p>
+        <p>Shh… parece que el conejo quiere mostrarnos algo.</p>
+        <button
+          className={styles.actionButton}
+          type="button"
+          onClick={() => transitionTo("stage")}
+          disabled={scene !== "glade"}
+        >
+          Seguir al conejo
+        </button>
+      </section>
+
+      <section
+        ref={stagePromptRef}
+        className={styles.scenePrompt}
+        tabIndex={-1}
+        aria-hidden={scene !== "stage"}
+      >
+        <p>Ahora sí… algo está ocurriendo junto al tocón.</p>
+      </section>
     </main>
   );
 }
