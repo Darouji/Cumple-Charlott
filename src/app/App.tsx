@@ -1,9 +1,12 @@
 import { invitationConfig } from "../config/invitation.config";
+import { PixiScene } from "../scene/PixiScene";
 import styles from "./App.module.css";
 
 export function App() {
   return (
     <main className={styles.app}>
+      <PixiScene />
+
       <section className={styles.content} aria-labelledby="invitation-title">
         <div className={styles.glow} aria-hidden="true" />
 
