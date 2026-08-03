@@ -7,6 +7,7 @@ import thresholdLandscape from "../assets/forest/forest-threshold-landscape-v2.w
 import thresholdPortrait from "../assets/forest/forest-threshold-portrait-v2.webp";
 import gladeLandscape from "../assets/forest/hidden-glade-landscape.webp";
 import gladePortrait from "../assets/forest/hidden-glade-portrait.webp";
+import { RabbitActor } from "../characters/RabbitActor";
 import { invitationConfig } from "../config/invitation.config";
 import { PixiScene } from "../scene/PixiScene";
 import styles from "./App.module.css";
@@ -16,6 +17,7 @@ type SceneState = StableScene | "transitioning";
 
 export function App() {
   const [scene, setScene] = useState<SceneState>("threshold");
+  const [rabbitEscaping, setRabbitEscaping] = useState(false);
   const thresholdRef = useRef<HTMLPictureElement>(null);
   const gladeRef = useRef<HTMLPictureElement>(null);
   const stageRef = useRef<HTMLPictureElement>(null);
@@ -86,6 +88,28 @@ export function App() {
     );
   };
 
+  const followRabbit = () => {
+    if (scene !== "glade" || rabbitEscaping) {
+      return;
+    }
+
+    setRabbitEscaping(true);
+
+    if (discoveryPromptRef.current) {
+      gsap.to(discoveryPromptRef.current, {
+        autoAlpha: 0,
+        y: 12,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    }
+  };
+
+  const finishRabbitEscape = () => {
+    setRabbitEscaping(false);
+    transitionTo("stage");
+  };
+
   return (
     <main className={styles.app}>
       <picture
@@ -116,6 +140,11 @@ export function App() {
       </picture>
 
       <PixiScene />
+      <RabbitActor
+        scene={scene}
+        escaping={rabbitEscaping}
+        onEscapeComplete={finishRabbitEscape}
+      />
       <div className={styles.atmosphere} aria-hidden="true" />
 
       <section
@@ -156,8 +185,8 @@ export function App() {
         <button
           className={styles.actionButton}
           type="button"
-          onClick={() => transitionTo("stage")}
-          disabled={scene !== "glade"}
+          onClick={followRabbit}
+          disabled={scene !== "glade" || rabbitEscaping}
         >
           Seguir al conejo
         </button>

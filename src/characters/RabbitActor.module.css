@@ -1,0 +1,48 @@
+.layer {
+  position: absolute;
+  z-index: var(--z-character);
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rabbit {
+  position: absolute;
+  display: block;
+  height: auto;
+  user-select: none;
+  will-change: opacity, transform, left, top;
+}
+
+.alert {
+  bottom: -2%;
+  left: -3%;
+  width: clamp(9.5rem, 40vw, 22rem);
+  visibility: hidden;
+  opacity: 0;
+  filter: drop-shadow(0 1.25rem 1.2rem rgb(0 5 3 / 46%));
+  transform-origin: 45% 100%;
+}
+
+.escape {
+  top: 66%;
+  left: 10%;
+  width: clamp(8.5rem, 34vw, 20rem);
+  visibility: hidden;
+  opacity: 0;
+  filter: drop-shadow(0 0.65rem 0.7rem rgb(0 5 3 / 38%));
+  translate: -50% -50%;
+  transform-origin: 50% 75%;
+}
+
+@media (min-aspect-ratio: 4 / 3) {
+  .alert {
+    bottom: -10%;
+    left: 4%;
+    width: min(22vw, 22rem);
+  }
+
+  .escape {
+    width: min(20vw, 20rem);
+  }
+}
