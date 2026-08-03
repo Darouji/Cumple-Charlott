@@ -120,10 +120,10 @@ export function createInvitationScene(
     for (const firefly of fireflies) {
       const time = elapsedSeconds * firefly.speed + firefly.phase;
       firefly.view.x =
-        firefly.originX + Math.sin(time) * firefly.driftX * motionScale;
+        firefly.originX + Math.sin(time) * firefly.driftX;
       firefly.view.y =
         firefly.originY +
-        Math.cos(time * 0.72) * firefly.driftY * motionScale;
+        Math.cos(time * 0.72) * firefly.driftY;
       firefly.view.alpha = 0.22 + (Math.sin(time * 1.8) + 1) * 0.3;
     }
   };
