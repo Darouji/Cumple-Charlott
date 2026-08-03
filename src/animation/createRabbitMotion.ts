@@ -10,7 +10,8 @@ export interface RabbitPoseElements {
 }
 
 export interface RabbitMotionElements {
-  readonly rig: HTMLElement;
+  readonly anchor: HTMLElement;
+  readonly body: HTMLElement;
   readonly shadow: HTMLElement;
   readonly poses: RabbitPoseElements;
 }
@@ -46,12 +47,20 @@ function setGroundedState(
   point: Point,
 ) {
   timeline
-    .set(elements.rig, {
+    .set(elements.anchor, {
       autoAlpha: 1,
       left: `${point.x}%`,
       top: `${point.ground}%`,
       rotation: 0,
       scale: point.scale,
+      x: 0,
+      xPercent: -50,
+      y: 0,
+      yPercent: -100,
+    })
+    .set(elements.body, {
+      autoAlpha: 1,
+      rotation: 0,
       scaleX: 1,
       scaleY: 1,
       x: 0,
@@ -62,8 +71,8 @@ function setGroundedState(
       left: `${point.x}%`,
       top: `${point.ground}%`,
       scale: point.scale,
-      scaleX: 1,
-      scaleY: 1,
+      xPercent: -50,
+      yPercent: -42,
     });
 }
 
@@ -81,14 +90,18 @@ function addHop(
 
   showPose(timeline, elements.poses, elements.poses.hopAway);
   timeline
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${midpointX}%`,
       top: `${midpointGround - apexHeight}%`,
       scale: midpointScale,
-      rotation: 2,
       duration: 0.28,
       ease: "power2.out",
     })
+    .to(
+      elements.body,
+      { rotation: 2, duration: 0.28, ease: "power2.out" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -101,14 +114,18 @@ function addHop(
       },
       "<",
     )
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${to.x}%`,
       top: `${to.ground}%`,
       scale: to.scale,
-      rotation: 0,
       duration: 0.23,
       ease: "power2.in",
     })
+    .to(
+      elements.body,
+      { rotation: 0, duration: 0.23, ease: "power2.in" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -123,13 +140,13 @@ function addHop(
     );
   showPose(timeline, elements.poses, landingPose);
   timeline
-    .to(elements.rig, {
+    .to(elements.body, {
       scaleX: 1.055,
       scaleY: 0.91,
       duration: 0.08,
       ease: "power2.out",
     })
-    .to(elements.rig, {
+    .to(elements.body, {
       scaleX: 1,
       scaleY: 1,
       duration: 0.12,
@@ -193,14 +210,18 @@ export function createRabbitArrival(
   const firstMidX = (start.x + firstLanding.x) / 2;
   const firstMidGround = (start.ground + firstLanding.ground) / 2;
   timeline
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${firstMidX}%`,
       top: `${firstMidGround - 9}%`,
       scale: (start.scale + firstLanding.scale) / 2,
-      rotation: -2,
       duration: 0.3,
       ease: "power2.out",
     })
+    .to(
+      elements.body,
+      { rotation: -2, duration: 0.3, ease: "power2.out" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -212,14 +233,18 @@ export function createRabbitArrival(
       },
       "<",
     )
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${firstLanding.x}%`,
       top: `${firstLanding.ground}%`,
       scale: firstLanding.scale,
-      rotation: 0,
       duration: 0.24,
       ease: "power2.in",
     })
+    .to(
+      elements.body,
+      { rotation: 0, duration: 0.24, ease: "power2.in" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -233,8 +258,8 @@ export function createRabbitArrival(
     );
   showPose(timeline, elements.poses, elements.poses.landSide);
   timeline
-    .to(elements.rig, { scaleX: 1.055, scaleY: 0.9, duration: 0.08 })
-    .to(elements.rig, {
+    .to(elements.body, { scaleX: 1.055, scaleY: 0.9, duration: 0.08 })
+    .to(elements.body, {
       scaleX: 1,
       scaleY: 1,
       duration: 0.13,
@@ -245,14 +270,18 @@ export function createRabbitArrival(
   const secondMidGround = (firstLanding.ground + finalLanding.ground) / 2;
   showPose(timeline, elements.poses, elements.poses.hopSide);
   timeline
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${secondMidX}%`,
       top: `${secondMidGround - 6.5}%`,
       scale: (firstLanding.scale + finalLanding.scale) / 2,
-      rotation: 1.5,
       duration: 0.25,
       ease: "power2.out",
     })
+    .to(
+      elements.body,
+      { rotation: 1.5, duration: 0.25, ease: "power2.out" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -264,14 +293,18 @@ export function createRabbitArrival(
       },
       "<",
     )
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${finalLanding.x}%`,
       top: `${finalLanding.ground}%`,
       scale: finalLanding.scale,
-      rotation: 0,
       duration: 0.21,
       ease: "power2.in",
     })
+    .to(
+      elements.body,
+      { rotation: 0, duration: 0.21, ease: "power2.in" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -285,8 +318,8 @@ export function createRabbitArrival(
     );
   showPose(timeline, elements.poses, elements.poses.landSide);
   timeline
-    .to(elements.rig, { scaleX: 1.05, scaleY: 0.92, duration: 0.08 })
-    .to(elements.rig, {
+    .to(elements.body, { scaleX: 1.05, scaleY: 0.92, duration: 0.08 })
+    .to(elements.body, {
       scaleX: 1,
       scaleY: 1,
       duration: 0.14,
@@ -294,7 +327,7 @@ export function createRabbitArrival(
     });
   showPose(timeline, elements.poses, elements.poses.alert);
   timeline.fromTo(
-    elements.rig,
+    elements.body,
     { rotation: -1.2 },
     { rotation: 0, duration: 0.35, ease: "back.out(1.8)" },
   );
@@ -313,19 +346,23 @@ export function createRabbitThresholdExit(
   const timeline = gsap.timeline({ onComplete: options.onComplete });
 
   if (options.reducedMotion) {
-    return timeline.set([elements.rig, elements.shadow], { autoAlpha: 0 });
+    return timeline.set([elements.anchor, elements.shadow], { autoAlpha: 0 });
   }
 
   showPose(timeline, elements.poses, elements.poses.hopSide);
   timeline
-    .to(elements.rig, {
+    .to(elements.anchor, {
       left: `${destination.x}%`,
       top: `${destination.ground - 7}%`,
       scale: destination.scale * 1.45,
-      rotation: 2,
       duration: 0.48,
       ease: "power2.out",
     })
+    .to(
+      elements.body,
+      { rotation: 2, duration: 0.48, ease: "power2.out" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -337,13 +374,17 @@ export function createRabbitThresholdExit(
       },
       "<",
     )
-    .to(elements.rig, {
+    .to(elements.anchor, {
       top: `${destination.ground}%`,
       scale: destination.scale,
-      rotation: 0,
       duration: 0.28,
       ease: "power2.in",
     })
+    .to(
+      elements.body,
+      { rotation: 0, duration: 0.28, ease: "power2.in" },
+      "<",
+    )
     .to(
       elements.shadow,
       {
@@ -353,7 +394,7 @@ export function createRabbitThresholdExit(
       },
       "<",
     )
-    .to(elements.rig, { autoAlpha: 0, duration: 0.14 }, "-=0.1");
+    .to(elements.anchor, { autoAlpha: 0, duration: 0.14 }, "-=0.1");
 
   return timeline;
 }
@@ -373,7 +414,7 @@ export function createRabbitJourney(
   const timeline = gsap.timeline({ onComplete: options.onComplete });
 
   if (options.reducedMotion) {
-    return timeline.set([elements.rig, elements.shadow], { autoAlpha: 0 });
+    return timeline.set([elements.anchor, elements.shadow], { autoAlpha: 0 });
   }
 
   setGroundedState(timeline, elements, start);
@@ -390,17 +431,17 @@ export function createRabbitJourney(
 
   showPose(timeline, elements.poses, elements.poses.lookBack);
   timeline
-    .to(elements.rig, {
+    .to(elements.body, {
       rotation: -1.2,
       duration: 0.18,
       ease: "power2.out",
     })
-    .to(elements.rig, {
+    .to(elements.body, {
       rotation: 0.8,
       duration: 0.32,
       ease: "sine.inOut",
     })
-    .to(elements.rig, {
+    .to(elements.body, {
       rotation: 0,
       duration: 0.2,
       ease: "power2.out",
@@ -425,7 +466,7 @@ export function createRabbitJourney(
   );
   timeline
     .to(elements.shadow, { autoAlpha: 0, duration: 0.2 })
-    .to(elements.rig, { autoAlpha: 0, duration: 0.2 }, "<");
+    .to(elements.anchor, { autoAlpha: 0, duration: 0.2 }, "<");
 
   return timeline;
 }

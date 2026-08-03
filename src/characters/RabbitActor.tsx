@@ -30,7 +30,8 @@ export function RabbitActor({
   onThresholdExitComplete,
   onJourneyComplete,
 }: RabbitActorProps) {
-  const rigRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const shadowRef = useRef<HTMLDivElement>(null);
   const alertRef = useRef<HTMLImageElement>(null);
   const hopSideRef = useRef<HTMLImageElement>(null);
@@ -53,7 +54,8 @@ export function RabbitActor({
   }, [onArrivalComplete, onJourneyComplete, onThresholdExitComplete]);
 
   useEffect(() => {
-    const rig = rigRef.current;
+    const anchor = anchorRef.current;
+    const body = bodyRef.current;
     const shadow = shadowRef.current;
     const alert = alertRef.current;
     const hopSide = hopSideRef.current;
@@ -63,7 +65,8 @@ export function RabbitActor({
     const lookBack = lookBackRef.current;
 
     if (
-      !rig ||
+      !anchor ||
+      !body ||
       !shadow ||
       !alert ||
       !hopSide ||
@@ -76,12 +79,14 @@ export function RabbitActor({
     }
 
     const elements: RabbitMotionElements = {
-      rig,
+      anchor,
+      body,
       shadow,
       poses: { alert, hopSide, landSide, hopAway, landAway, lookBack },
     };
     const animatedElements = [
-      rig,
+      anchor,
+      body,
       shadow,
       alert,
       hopSide,
@@ -104,7 +109,7 @@ export function RabbitActor({
         onComplete: () => callbacksRef.current.onArrivalComplete(),
       });
     } else if (phase === "threshold-ready") {
-      timeline = createRabbitIdle(rig, { reducedMotion });
+      timeline = createRabbitIdle(body, { reducedMotion });
     } else if (phase === "threshold-exit") {
       timeline = createRabbitThresholdExit(elements, {
         reducedMotion,
@@ -127,33 +132,35 @@ export function RabbitActor({
   return (
     <div className={styles.layer} aria-hidden="true">
       <div ref={shadowRef} className={styles.shadow} />
-      <div ref={rigRef} className={styles.rig}>
-        <img ref={alertRef} className={styles.pose} src={rabbitAlert} alt="" />
-        <img
-          ref={hopSideRef}
-          className={styles.pose}
-          src={rabbitHopSide}
-          alt=""
-        />
-        <img
-          ref={landSideRef}
-          className={styles.pose}
-          src={rabbitLandSide}
-          alt=""
-        />
-        <img ref={hopAwayRef} className={styles.pose} src={rabbitHop} alt="" />
-        <img
-          ref={landAwayRef}
-          className={styles.pose}
-          src={rabbitLandAway}
-          alt=""
-        />
-        <img
-          ref={lookBackRef}
-          className={styles.pose}
-          src={rabbitLookBack}
-          alt=""
-        />
+      <div ref={anchorRef} className={styles.anchor}>
+        <div ref={bodyRef} className={styles.body}>
+          <img ref={alertRef} className={styles.pose} src={rabbitAlert} alt="" />
+          <img
+            ref={hopSideRef}
+            className={styles.pose}
+            src={rabbitHopSide}
+            alt=""
+          />
+          <img
+            ref={landSideRef}
+            className={styles.pose}
+            src={rabbitLandSide}
+            alt=""
+          />
+          <img ref={hopAwayRef} className={styles.pose} src={rabbitHop} alt="" />
+          <img
+            ref={landAwayRef}
+            className={styles.pose}
+            src={rabbitLandAway}
+            alt=""
+          />
+          <img
+            ref={lookBackRef}
+            className={styles.pose}
+            src={rabbitLookBack}
+            alt=""
+          />
+        </div>
       </div>
     </div>
   );
