@@ -13,15 +13,31 @@
   position: absolute;
   z-index: var(--z-scene);
   inset: -3%;
-  background-image:
-    linear-gradient(180deg, rgb(2 12 17 / 8%) 0%, rgb(2 12 9 / 34%) 100%),
-    url("../assets/forest/enchanted-forest.webp");
-  background-position: center;
-  background-size: cover;
   filter: saturate(0.92) contrast(1.04);
   transform: scale(1.015);
-  animation: forest-breathe 22s ease-in-out infinite alternate;
   pointer-events: none;
+}
+
+.forest::after {
+  position: absolute;
+  content: "";
+  inset: 0;
+  background: linear-gradient(180deg, rgb(2 12 17 / 8%) 0%, rgb(2 12 9 / 34%) 100%);
+}
+
+.forest img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.threshold {
+  animation: forest-breathe 22s ease-in-out infinite alternate;
+}
+
+.glade {
+  visibility: hidden;
+  opacity: 0;
 }
 
 .atmosphere {
@@ -46,7 +62,6 @@
     max(var(--space-5), env(safe-area-inset-bottom))
     max(var(--space-5), env(safe-area-inset-left));
   text-align: center;
-  pointer-events: none;
 }
 
 .eyebrow {
@@ -75,6 +90,64 @@
   font-size: clamp(1rem, 4vw, 1.2rem);
   line-height: 1.6;
   text-wrap: balance;
+}
+
+.enterButton {
+  justify-self: center;
+  min-height: 3rem;
+  margin-top: var(--space-6);
+  padding: 0.75rem 1.35rem;
+  border: 1px solid var(--color-border-magic);
+  border-radius: var(--radius-round);
+  color: var(--color-text-primary);
+  background: var(--color-surface-glass);
+  box-shadow:
+    0 0 2rem rgb(183 232 229 / 14%),
+    inset 0 0 1.25rem rgb(246 215 123 / 8%);
+  backdrop-filter: blur(0.75rem);
+  transition:
+    border-color var(--duration-normal) var(--ease-natural),
+    box-shadow var(--duration-normal) var(--ease-natural),
+    transform var(--duration-normal) var(--ease-natural);
+}
+
+.enterButton:hover:not(:disabled) {
+  border-color: var(--color-magic-gold);
+  box-shadow:
+    0 0 2.75rem rgb(183 232 229 / 24%),
+    inset 0 0 1.5rem rgb(246 215 123 / 12%);
+  transform: translateY(-2px);
+}
+
+.enterButton:focus-visible {
+  outline: 2px solid var(--color-magic-gold-soft);
+  outline-offset: 4px;
+}
+
+.enterButton:disabled {
+  cursor: default;
+}
+
+.discoveryHint {
+  position: absolute;
+  z-index: var(--z-interface);
+  bottom: max(var(--space-7), env(safe-area-inset-bottom));
+  left: 50%;
+  width: min(85vw, 32rem);
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 5vw, 2rem);
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 0 0 1.5rem rgb(0 0 0 / 90%);
+  visibility: hidden;
+  opacity: 0;
+  translate: -50% 0;
+}
+
+.discoveryHint:focus {
+  outline: none;
 }
 
 .glow {
