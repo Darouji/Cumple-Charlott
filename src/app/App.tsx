@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
 import { createSceneTransition } from "../animation/createSceneTransition";
 import stageLandscape from "../assets/forest/fairy-stage-landscape.webp";
@@ -8,22 +9,24 @@ import thresholdPortrait from "../assets/forest/forest-threshold-portrait-v2.web
 import gladeLandscape from "../assets/forest/hidden-glade-landscape.webp";
 import gladePortrait from "../assets/forest/hidden-glade-portrait.webp";
 import { RabbitActor } from "../characters/RabbitActor";
-import { invitationConfig } from "../config/invitation.config";
+import {
+  experienceCopy,
+  type ExperiencePhase,
+} from "../config/experience.config";
 import { PixiScene } from "../scene/PixiScene";
 import styles from "./App.module.css";
 
-type StableScene = "threshold" | "glade" | "stage";
-type SceneState = StableScene | "transitioning";
+type Destination = "glade" | "stage";
 
 export function App() {
-  const [scene, setScene] = useState<SceneState>("threshold");
-  const [rabbitEscaping, setRabbitEscaping] = useState(false);
+  const [phase, setPhase] = useState<ExperiencePhase>("threshold-intro");
   const thresholdRef = useRef<HTMLPictureElement>(null);
   const gladeRef = useRef<HTMLPictureElement>(null);
   const stageRef = useRef<HTMLPictureElement>(null);
   const introductionRef = useRef<HTMLElement>(null);
   const discoveryPromptRef = useRef<HTMLElement>(null);
   const stagePromptRef = useRef<HTMLElement>(null);
+  const interactionRef = useRef<HTMLButtonElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
@@ -33,82 +36,78 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const prompt =
-      scene === "glade"
-        ? discoveryPromptRef.current
-        : scene === "stage"
-          ? stagePromptRef.current
-          : null;
-
-    prompt?.focus({ preventScroll: true });
-  }, [scene]);
-
-  const transitionTo = (destination: "glade" | "stage") => {
-    const plan =
-      destination === "glade"
-        ? {
-            from: "threshold" as const,
-            outgoingScene: thresholdRef.current,
-            incomingScene: gladeRef.current,
-            outgoingContent: introductionRef.current,
-            incomingContent: discoveryPromptRef.current,
-          }
-        : {
-            from: "glade" as const,
-            outgoingScene: gladeRef.current,
-            incomingScene: stageRef.current,
-            outgoingContent: discoveryPromptRef.current,
-            incomingContent: stagePromptRef.current,
-          };
-
     if (
-      scene !== plan.from ||
-      !plan.outgoingScene ||
-      !plan.incomingScene ||
-      !plan.outgoingContent ||
-      !plan.incomingContent
+      phase === "threshold-intro" ||
+      phase === "threshold-ready" ||
+      phase === "glade-prompt"
     ) {
+      interactionRef.current?.focus({ preventScroll: true });
+    } else if (phase === "stage-reveal") {
+      stagePromptRef.current?.focus({ preventScroll: true });
+    }
+  }, [phase]);
+
+  const beginSceneTransition = (destination: Destination) => {
+    const outgoingScene =
+      destination === "glade" ? thresholdRef.current : gladeRef.current;
+    const incomingScene =
+      destination === "glade" ? gladeRef.current : stageRef.current;
+    const incomingContent =
+      destination === "glade"
+        ? discoveryPromptRef.current
+        : stagePromptRef.current;
+
+    if (!outgoingScene || !incomingScene || !incomingContent) {
       return;
     }
 
-    setScene("transitioning");
+    setPhase(destination === "glade" ? "entering-glade" : "entering-stage");
     timelineRef.current = createSceneTransition(
-      {
-        outgoingScene: plan.outgoingScene,
-        incomingScene: plan.incomingScene,
-        outgoingContent: plan.outgoingContent,
-        incomingContent: plan.incomingContent,
-      },
+      { outgoingScene, incomingScene, incomingContent },
       {
         reducedMotion: window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches,
-        onComplete: () => setScene(destination),
+        onComplete: () =>
+          setPhase(destination === "glade" ? "glade-prompt" : "stage-reveal"),
       },
     );
   };
 
-  const followRabbit = () => {
-    if (scene !== "glade" || rabbitEscaping) {
-      return;
-    }
+  const advanceExperience = () => {
+    if (phase === "threshold-intro") {
+      if (introductionRef.current) {
+        gsap.to(introductionRef.current, {
+          autoAlpha: 0,
+          y: -14,
+          duration: 0.45,
+          ease: "power2.out",
+        });
+      }
 
-    setRabbitEscaping(true);
+      setPhase("threshold-arrival");
+    } else if (phase === "threshold-ready") {
+      setPhase("threshold-exit");
+    } else if (phase === "glade-prompt") {
+      if (discoveryPromptRef.current) {
+        gsap.to(discoveryPromptRef.current, {
+          autoAlpha: 0,
+          y: 12,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
 
-    if (discoveryPromptRef.current) {
-      gsap.to(discoveryPromptRef.current, {
-        autoAlpha: 0,
-        y: 12,
-        duration: 0.3,
-        ease: "power2.out",
-      });
+      setPhase("glade-journey");
     }
   };
 
-  const finishRabbitEscape = () => {
-    setRabbitEscaping(false);
-    transitionTo("stage");
-  };
+  const interactionCopy =
+    phase === "threshold-intro"
+      ? experienceCopy.interaction.continue
+      : phase === "threshold-ready" || phase === "glade-prompt"
+        ? experienceCopy.interaction.follow
+        : null;
 
   return (
     <main className={styles.app}>
@@ -141,65 +140,60 @@ export function App() {
 
       <PixiScene />
       <RabbitActor
-        scene={scene}
-        escaping={rabbitEscaping}
-        onEscapeComplete={finishRabbitEscape}
+        phase={phase}
+        onArrivalComplete={() => setPhase("threshold-ready")}
+        onThresholdExitComplete={() => beginSceneTransition("glade")}
+        onJourneyComplete={() => beginSceneTransition("stage")}
       />
       <div className={styles.atmosphere} aria-hidden="true" />
 
       <section
         ref={introductionRef}
         className={styles.content}
-        aria-labelledby="invitation-title"
-        aria-hidden={scene !== "threshold"}
+        aria-labelledby="experience-title"
+        aria-hidden={phase !== "threshold-intro"}
       >
         <div className={styles.glow} aria-hidden="true" />
-
-        <p className={styles.eyebrow}>Una celebración encantada</p>
-
-        <h1 id="invitation-title" className={styles.title}>
-          {invitationConfig.honoree} cumple {invitationConfig.age}
+        <p className={styles.eyebrow}>{experienceCopy.intro.eyebrow}</p>
+        <h1 id="experience-title" className={styles.title}>
+          {experienceCopy.intro.title}
         </h1>
-
-        <p className={styles.subtitle}>
-          El bosque está preparando algo mágico. Quizás deberíamos acercarnos.
-        </p>
-
-        <button
-          className={styles.actionButton}
-          type="button"
-          onClick={() => transitionTo("glade")}
-          disabled={scene !== "threshold"}
-        >
-          Adéntrate en el bosque
-        </button>
       </section>
 
       <section
         ref={discoveryPromptRef}
         className={styles.scenePrompt}
         tabIndex={-1}
-        aria-hidden={scene !== "glade"}
+        aria-live="polite"
+        aria-hidden={phase !== "glade-prompt"}
       >
-        <p>Shh… parece que el conejo quiere mostrarnos algo.</p>
-        <button
-          className={styles.actionButton}
-          type="button"
-          onClick={followRabbit}
-          disabled={scene !== "glade" || rabbitEscaping}
-        >
-          Seguir al conejo
-        </button>
+        <p>{experienceCopy.glade}</p>
       </section>
 
       <section
         ref={stagePromptRef}
-        className={styles.scenePrompt}
+        className={`${styles.scenePrompt} ${styles.stagePrompt}`}
         tabIndex={-1}
-        aria-hidden={scene !== "stage"}
+        aria-live="polite"
+        aria-hidden={phase !== "stage-reveal"}
       >
-        <p>Ahora sí… algo está ocurriendo junto al tocón.</p>
+        <p>{experienceCopy.stage}</p>
       </section>
+
+      {interactionCopy ? (
+        <button
+          ref={interactionRef}
+          className={styles.screenTrigger}
+          type="button"
+          onClick={advanceExperience}
+          aria-label={`${interactionCopy.coarse}.`}
+        >
+          <span className={styles.interactionCue}>
+            <span className={styles.coarseCue}>{interactionCopy.coarse}</span>
+            <span className={styles.fineCue}>{interactionCopy.fine}</span>
+          </span>
+        </button>
+      ) : null}
     </main>
   );
 }
