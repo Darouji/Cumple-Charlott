@@ -17,6 +17,6 @@ export const sceneConfig = {
     maximumHorizontalDrift: 90,
     minimumVerticalDrift: 40,
     maximumVerticalDrift: 120,
-    reducedMotionScale: 0.18,
+    reducedMotionScale: 0.35,
   },
 } as const;
