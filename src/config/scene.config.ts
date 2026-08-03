@@ -11,5 +11,12 @@ export const sceneConfig = {
     seed: 30_080_826,
     minimumRadius: 1.8,
     maximumRadius: 4.4,
+    minimumSpeed: 0.7,
+    maximumSpeed: 1.35,
+    minimumHorizontalDrift: 30,
+    maximumHorizontalDrift: 90,
+    minimumVerticalDrift: 40,
+    maximumVerticalDrift: 120,
+    reducedMotionScale: 0.18,
   },
 } as const;
