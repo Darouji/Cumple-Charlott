@@ -87,9 +87,21 @@ export function createInvitationScene(
         originX,
         originY,
         phase: random() * Math.PI * 2,
-        speed: 0.45 + random() * 0.75,
-        driftX: 12 + random() * 38,
-        driftY: 18 + random() * 52,
+        speed:
+          sceneConfig.fireflies.minimumSpeed +
+          random() *
+            (sceneConfig.fireflies.maximumSpeed -
+              sceneConfig.fireflies.minimumSpeed),
+        driftX:
+          sceneConfig.fireflies.minimumHorizontalDrift +
+          random() *
+            (sceneConfig.fireflies.maximumHorizontalDrift -
+              sceneConfig.fireflies.minimumHorizontalDrift),
+        driftY:
+          sceneConfig.fireflies.minimumVerticalDrift +
+          random() *
+            (sceneConfig.fireflies.maximumVerticalDrift -
+              sceneConfig.fireflies.minimumVerticalDrift),
       };
     },
   );
@@ -100,18 +112,19 @@ export function createInvitationScene(
   let elapsedSeconds = 0;
 
   const animate = (ticker: Ticker) => {
-    if (reducedMotionQuery.matches) {
-      return;
-    }
-
-    elapsedSeconds += ticker.deltaMS / 1000;
+    const motionScale = reducedMotionQuery.matches
+      ? sceneConfig.fireflies.reducedMotionScale
+      : 1;
+    elapsedSeconds += (ticker.deltaMS / 1000) * motionScale;
 
     for (const firefly of fireflies) {
       const time = elapsedSeconds * firefly.speed + firefly.phase;
-      firefly.view.x = firefly.originX + Math.sin(time) * firefly.driftX;
+      firefly.view.x =
+        firefly.originX + Math.sin(time) * firefly.driftX * motionScale;
       firefly.view.y =
-        firefly.originY + Math.cos(time * 0.72) * firefly.driftY;
-      firefly.view.alpha = 0.28 + (Math.sin(time * 1.8) + 1) * 0.28;
+        firefly.originY +
+        Math.cos(time * 0.72) * firefly.driftY * motionScale;
+      firefly.view.alpha = 0.22 + (Math.sin(time * 1.8) + 1) * 0.3;
     }
   };
 
@@ -125,6 +138,8 @@ export function createInvitationScene(
   };
 
   app.ticker.add(animate);
+  app.ticker.maxFPS = 60;
+  app.ticker.start();
   resize();
 
   return {
