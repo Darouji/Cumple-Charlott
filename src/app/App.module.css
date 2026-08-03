@@ -6,11 +6,7 @@
   overflow: hidden;
   background:
     radial-gradient(circle at 50% 36%, rgb(168 230 186 / 11%), transparent 34%),
-    linear-gradient(
-      180deg,
-      var(--color-forest-800) 0%,
-      var(--color-forest-950) 76%
-    );
+    linear-gradient(180deg, var(--color-forest-800) 0%, var(--color-forest-950) 76%);
 }
 
 .content {
@@ -24,6 +20,7 @@
     max(var(--space-5), env(safe-area-inset-bottom))
     max(var(--space-5), env(safe-area-inset-left));
   text-align: center;
+  pointer-events: none;
 }
 
 .eyebrow {
