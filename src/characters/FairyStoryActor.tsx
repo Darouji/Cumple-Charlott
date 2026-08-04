@@ -2,15 +2,16 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 import {
+  createFairyStoryFinalIdle,
   createFairyStoryTimeline,
   setFairyStoryOpening,
   setFairyStoryOverview,
   type FairyStoryElements,
 } from "../animation/createFairyStoryTimeline";
-import openingPose from "../assets/characters/fairy/frames-v2/push-reach.webp";
+import openingPose from "../assets/characters/fairy/frames-v2/magic-idea.webp";
 import rabbitPeek from "../assets/characters/rabbit-alert.webp";
-import chestClosed from "../assets/props/chest-closed.webp";
-import blankLetter from "../assets/props/invitation-letter.webp";
+import chestClosed from "../assets/props/chest-front-closed.webp";
+import chestOpen from "../assets/props/chest-front-open.webp";
 import { fairyStoryAssetSources } from "../config/fairyStory.config";
 import type { ExperiencePhase } from "../config/experience.config";
 import styles from "./FairyStoryActor.module.css";
@@ -27,10 +28,13 @@ export function FairyStoryActor({
   const layerRef = useRef<HTMLDivElement>(null);
   const actorRef = useRef<HTMLDivElement>(null);
   const poseRef = useRef<HTMLImageElement>(null);
+  const poseGhostRef = useRef<HTMLImageElement>(null);
   const shadowRef = useRef<HTMLDivElement>(null);
   const chestRef = useRef<HTMLImageElement>(null);
   const chestShadowRef = useRef<HTMLDivElement>(null);
-  const letterRef = useRef<HTMLImageElement>(null);
+  const chestGlowRef = useRef<HTMLDivElement>(null);
+  const ideaSparkRef = useRef<HTMLDivElement>(null);
+  const sprinkleRef = useRef<HTMLDivElement>(null);
   const dustRef = useRef<HTMLDivElement>(null);
   const burstRef = useRef<HTMLDivElement>(null);
   const rabbitPeekRef = useRef<HTMLImageElement>(null);
@@ -44,7 +48,7 @@ export function FairyStoryActor({
     const preloadSources = [
       ...fairyStoryAssetSources,
       chestClosed,
-      blankLetter,
+      chestOpen,
       rabbitPeek,
     ];
 
@@ -59,10 +63,13 @@ export function FairyStoryActor({
     const layer = layerRef.current;
     const actor = actorRef.current;
     const pose = poseRef.current;
+    const poseGhost = poseGhostRef.current;
     const shadow = shadowRef.current;
     const chest = chestRef.current;
     const chestShadow = chestShadowRef.current;
-    const letter = letterRef.current;
+    const chestGlow = chestGlowRef.current;
+    const ideaSpark = ideaSparkRef.current;
+    const sprinkle = sprinkleRef.current;
     const dust = dustRef.current;
     const burst = burstRef.current;
     const rabbit = rabbitPeekRef.current;
@@ -71,10 +78,13 @@ export function FairyStoryActor({
       !layer ||
       !actor ||
       !pose ||
+      !poseGhost ||
       !shadow ||
       !chest ||
       !chestShadow ||
-      !letter ||
+      !chestGlow ||
+      !ideaSpark ||
+      !sprinkle ||
       !dust ||
       !burst ||
       !rabbit
@@ -86,10 +96,13 @@ export function FairyStoryActor({
       layer,
       actor,
       pose,
+      poseGhost,
       shadow,
       chest,
       chestShadow,
-      letter,
+      chestGlow,
+      ideaSpark,
+      sprinkle,
       dust,
       burst,
       rabbit,
@@ -108,10 +121,14 @@ export function FairyStoryActor({
       return;
     }
 
+    if (phase === "invitation-reveal") {
+      const idle = createFairyStoryFinalIdle(elements);
+
+      return () => idle.kill();
+    }
+
     if (phase !== "fairy-story") {
-      if (phase !== "invitation-reveal") {
-        gsap.set(layer, { autoAlpha: 0 });
-      }
+      gsap.set(layer, { autoAlpha: 0 });
       return;
     }
 
@@ -124,17 +141,26 @@ export function FairyStoryActor({
 
     return () => {
       timeline.kill();
+      gsap.killTweensOf([pose, poseGhost]);
     };
   }, [phase]);
 
   return (
     <div ref={layerRef} className={styles.layer} aria-hidden="true">
+      <div ref={sprinkleRef} className={styles.sprinkle} />
       <div ref={dustRef} className={styles.dust} />
       <div ref={burstRef} className={styles.burst} />
+      <div ref={ideaSparkRef} className={styles.ideaSpark} />
       <div className={styles.rabbitPeekFrame}>
-        <img ref={rabbitPeekRef} className={styles.rabbitPeek} src={rabbitPeek} alt="" />
+        <img
+          ref={rabbitPeekRef}
+          className={styles.rabbitPeek}
+          src={rabbitPeek}
+          alt=""
+        />
       </div>
 
+      <div ref={chestGlowRef} className={styles.chestGlow} />
       <div ref={chestShadowRef} className={styles.chestShadow} />
       <img
         ref={chestRef}
@@ -143,10 +169,14 @@ export function FairyStoryActor({
         alt=""
       />
 
-      <img ref={letterRef} className={styles.letter} src={blankLetter} alt="" />
-
       <div ref={actorRef} className={styles.actor}>
         <div ref={shadowRef} className={styles.shadow} />
+        <img
+          ref={poseGhostRef}
+          className={`${styles.pose} ${styles.poseGhost}`}
+          src={openingPose}
+          alt=""
+        />
         <img ref={poseRef} className={styles.pose} src={openingPose} alt="" />
       </div>
     </div>

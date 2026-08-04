@@ -35,6 +35,7 @@ export function App() {
   const stagePromptRef = useRef<HTMLElement>(null);
   const interactionRef = useRef<HTMLButtonElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const interactionLockedRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -43,6 +44,15 @@ export function App() {
   }, []);
 
   useEffect(() => {
+    if (
+      phase === "threshold-intro" ||
+      phase === "threshold-ready" ||
+      phase === "glade-prompt" ||
+      phase === "glade-listening"
+    ) {
+      interactionLockedRef.current = false;
+    }
+
     if (
       phase === "threshold-intro" ||
       phase === "threshold-ready" ||
@@ -64,14 +74,23 @@ export function App() {
       destination === "glade"
         ? discoveryPromptRef.current
         : stagePromptRef.current;
+    const outgoingContent =
+      destination === "stage" ? (listeningPromptRef.current ?? undefined) : undefined;
 
     if (!outgoingScene || !incomingScene || !incomingContent) {
+      interactionLockedRef.current = false;
       return;
+    }
+
+    timelineRef.current?.kill();
+
+    if (outgoingContent) {
+      gsap.killTweensOf(outgoingContent);
     }
 
     setPhase(destination === "glade" ? "entering-glade" : "entering-stage");
     timelineRef.current = createSceneTransition(
-      { outgoingScene, incomingScene, incomingContent },
+      { outgoingScene, incomingScene, outgoingContent, incomingContent },
       {
         reducedMotion: window.matchMedia(
           "(prefers-reduced-motion: reduce)",
@@ -125,7 +144,7 @@ export function App() {
         ease: "power2.out",
         onComplete: beginCloseTransition,
       });
-    }, reducedMotion ? 850 : 1850);
+    }, reducedMotion ? 850 : 3000);
 
     return () => window.clearTimeout(timeout);
   }, [phase]);
@@ -135,13 +154,19 @@ export function App() {
       return;
     }
 
-    const timeout = window.setTimeout(() => setPhase("fairy-story"), 900);
+    const timeout = window.setTimeout(() => setPhase("fairy-story"), 1250);
     return () => window.clearTimeout(timeout);
   }, [phase]);
 
   const advanceExperience = () => {
     if (phase === "threshold-intro") {
       if (introductionRef.current) {
+    if (interactionLockedRef.current) {
+      return;
+    }
+
+    interactionLockedRef.current = true;
+
         gsap.to(introductionRef.current, {
           autoAlpha: 0,
           y: -14,
@@ -165,16 +190,9 @@ export function App() {
 
       setPhase("glade-journey");
     } else if (phase === "glade-listening") {
-      if (listeningPromptRef.current) {
-        gsap.to(listeningPromptRef.current, {
-          autoAlpha: 0,
-          y: 12,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      }
-
       beginSceneTransition("stage");
+    } else {
+      interactionLockedRef.current = false;
     }
   };
 

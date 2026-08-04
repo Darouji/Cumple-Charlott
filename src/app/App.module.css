@@ -37,7 +37,7 @@
 
 .closeScene img {
   object-position: 50% 52%;
-  transform: scale(1.11);
+  transform: scale(1.05);
   transform-origin: 50% 53%;
 }
 .threshold {
