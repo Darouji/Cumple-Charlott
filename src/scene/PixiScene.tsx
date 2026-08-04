@@ -2,14 +2,27 @@ import { useEffect, useRef } from "react";
 import { Application } from "pixi.js";
 
 import { sceneConfig } from "../config/scene.config";
+import type { SceneId } from "../config/experience.config";
 import {
   createInvitationScene,
   type InvitationSceneController,
 } from "./createInvitationScene";
 import styles from "./PixiScene.module.css";
 
-export function PixiScene() {
+interface PixiSceneProps {
+  readonly scene: SceneId;
+}
+
+export function PixiScene({ scene }: PixiSceneProps) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const controllerRef = useRef<InvitationSceneController | null>(null);
+  const sceneRef = useRef(scene);
+
+  sceneRef.current = scene;
+
+  useEffect(() => {
+    controllerRef.current?.setScene(scene);
+  }, [scene]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -59,7 +72,8 @@ export function PixiScene() {
       canvas.setAttribute("aria-hidden", "true");
       host.appendChild(canvas);
 
-      controller = createInvitationScene(nextApp);
+      controller = createInvitationScene(nextApp, sceneRef.current);
+      controllerRef.current = controller;
       resizeObserver = new ResizeObserver(([entry]) => {
         if (!entry) {
           return;
@@ -83,6 +97,7 @@ export function PixiScene() {
       cancelled = true;
       resizeObserver?.disconnect();
       controller?.destroy();
+      controllerRef.current = null;
 
       if (initialized && app) {
         app.destroy(

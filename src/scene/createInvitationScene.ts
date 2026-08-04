@@ -1,7 +1,10 @@
 import { Application, Container, Graphics, type Ticker } from "pixi.js";
 
 import { sceneConfig } from "../config/scene.config";
+import type { SceneId } from "../config/experience.config";
+import { createSeededRandom } from "../utils/createSeededRandom";
 import { readCssHexColor } from "../utils/readCssHexColor";
+import { createLightFairySwarm } from "./createLightFairies";
 
 interface Firefly {
   readonly view: Container;
@@ -15,19 +18,8 @@ interface Firefly {
 
 export interface InvitationSceneController {
   readonly resize: () => void;
+  readonly setScene: (scene: SceneId) => void;
   readonly destroy: () => void;
-}
-
-function createSeededRandom(seed: number): () => number {
-  let state = seed >>> 0;
-
-  return () => {
-    state += 0x6d2b79f5;
-    let value = state;
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-    return ((value ^ (value >>> 14)) >>> 0) / 4_294_967_296;
-  };
 }
 
 function createFireflyView(
@@ -53,17 +45,29 @@ function createFireflyView(
 
 export function createInvitationScene(
   app: Application,
+  initialScene: SceneId,
 ): InvitationSceneController {
   const root = new Container();
-  const effectsLayer = new Container();
+  const fireflyLayer = new Container();
+  const lightFairyLayer = new Container();
   const random = createSeededRandom(sceneConfig.fireflies.seed);
   const coreColor = readCssHexColor("--color-fairy-glow");
   const haloColor = readCssHexColor("--color-magic-green");
+  const lightFairies = createLightFairySwarm(
+    lightFairyLayer,
+    {
+      core: readCssHexColor("--color-fairy-glow"),
+      halo: readCssHexColor("--color-light-fairy-halo"),
+      wings: readCssHexColor("--color-light-fairy-wings"),
+    },
+    initialScene,
+  );
   const { width, height } = sceneConfig.designSize;
 
   root.label = "invitation-scene";
-  effectsLayer.label = "fireflies";
-  root.addChild(effectsLayer);
+  fireflyLayer.label = "fireflies";
+  lightFairyLayer.label = "light-fairies";
+  root.addChild(fireflyLayer, lightFairyLayer);
   app.stage.addChild(root);
 
   const fireflies: Firefly[] = Array.from(
@@ -80,7 +84,7 @@ export function createInvitationScene(
 
       view.position.set(originX, originY);
       view.alpha = 0.3 + random() * 0.55;
-      effectsLayer.addChild(view);
+      fireflyLayer.addChild(view);
 
       return {
         view,
@@ -116,6 +120,11 @@ export function createInvitationScene(
       ? sceneConfig.fireflies.reducedMotionScale
       : 1;
     elapsedSeconds += (ticker.deltaMS / 1000) * motionScale;
+    lightFairies.animate(
+      elapsedSeconds,
+      ticker.deltaMS / 1000,
+      reducedMotionQuery.matches,
+    );
 
     for (const firefly of fireflies) {
       const time = elapsedSeconds * firefly.speed + firefly.phase;
@@ -144,6 +153,7 @@ export function createInvitationScene(
 
   return {
     resize,
+    setScene: lightFairies.setScene,
     destroy: () => {
       app.ticker.remove(animate);
       root.removeFromParent();

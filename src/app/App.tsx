@@ -11,6 +11,7 @@ import gladePortrait from "../assets/forest/hidden-glade-portrait.webp";
 import { RabbitActor } from "../characters/RabbitActor";
 import {
   experienceCopy,
+  getActiveScene,
   type ExperiencePhase,
 } from "../config/experience.config";
 import { PixiScene } from "../scene/PixiScene";
@@ -138,7 +139,7 @@ export function App() {
         <img src={stagePortrait} alt="" />
       </picture>
 
-      <PixiScene />
+      <PixiScene scene={getActiveScene(phase)} />
       <RabbitActor
         phase={phase}
         onArrivalComplete={() => setPhase("threshold-ready")}
