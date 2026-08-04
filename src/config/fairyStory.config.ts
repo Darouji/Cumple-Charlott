@@ -92,6 +92,8 @@ export const fairyStoryMirroredPoses = new Set<FairyStoryPose>([
   "hip-push",
   "hip-max",
   "hip-stumble",
+  "descend-left",
+  "land-left",
 ]);
 
 interface FairyStoryPoseAdjustment {
@@ -107,13 +109,10 @@ export const fairyStoryPoseAdjustments: Partial<
   "push-contact": { x: -1, y: 1 },
   "push-drive": { x: -3, y: 1 },
   "push-max": { x: -5, y: 1 },
-  "hip-turn": { x: -2, y: 2 },
-  "hip-grip": { x: -3, y: 1 },
-  "hip-brace": { x: -4, y: 1 },
-  "hip-drive": { x: -5, y: 1 },
-  "hip-push": { x: -6, y: 2 },
-  "hip-max": { x: -7, y: 2 },
-  "hip-stumble": { x: -2, y: 1 },
+  "recover-breath": { x: 0, y: 1 },
+  "inspect-ground": { x: 1, y: 2 },
+  "descend-left": { x: 1, y: 1 },
+  "land-left": { x: 2, y: 2 },
   "pull-grip": { x: 2, y: 2 },
   "pull-step": { x: 4, y: 2 },
   "pull-max": { x: 6, y: 2 },
@@ -124,14 +123,15 @@ export const fairyStoryPoseAdjustments: Partial<
 
 export const fairyStoryLayout = {
   close: {
-    chest: { left: "48%", top: "53%", rotation: -1 },
+    chest: { left: "48%", top: "53%", rotation: 0 },
     rightActor: { left: "var(--fairy-right-x)", top: "50.5%" },
     leftActor: { left: "var(--fairy-left-x)", top: "50.5%" },
   },
   overview: {
     chest: { left: "49%", top: "55%", scale: 0.32 },
     actor: { left: "var(--fairy-overview-x)", top: "53%", scale: 0.32 },
-  },  frame: {
+  },
+  frame: {
     width: 720,
     height: 724,
   },
