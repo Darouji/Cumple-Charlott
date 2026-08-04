@@ -83,12 +83,14 @@ function addHop(
   to: Point,
   apexHeight: number,
   landingPose: HTMLElement,
+  airbornePose: HTMLElement = elements.poses.hopAway,
+  bodyTilt = 2,
 ) {
   const midpointX = (from.x + to.x) / 2;
   const midpointGround = (from.ground + to.ground) / 2;
   const midpointScale = (from.scale + to.scale) / 2;
 
-  showPose(timeline, elements.poses, elements.poses.hopAway);
+  showPose(timeline, elements.poses, airbornePose);
   timeline
     .to(elements.anchor, {
       left: `${midpointX}%`,
@@ -99,7 +101,7 @@ function addHop(
     })
     .to(
       elements.body,
-      { rotation: 2, duration: 0.28, ease: "power2.out" },
+      { rotation: bodyTilt, duration: 0.28, ease: "power2.out" },
       "<",
     )
     .to(
@@ -340,6 +342,12 @@ export function createRabbitThresholdExit(
   options: Required<RabbitMotionOptions>,
 ): gsap.core.Timeline {
   const landscape = window.matchMedia("(min-aspect-ratio: 4 / 3)").matches;
+  const start: Point = landscape
+    ? { x: 19, ground: 74, scale: 0.53 }
+    : { x: 22, ground: 77, scale: 0.63 };
+  const intermediateLanding: Point = landscape
+    ? { x: 37, ground: 69, scale: 0.35 }
+    : { x: 37, ground: 71, scale: 0.42 };
   const destination: Point = landscape
     ? { x: 55, ground: 64, scale: 0.18 }
     : { x: 51, ground: 63, scale: 0.2 };
@@ -349,52 +357,33 @@ export function createRabbitThresholdExit(
     return timeline.set([elements.anchor, elements.shadow], { autoAlpha: 0 });
   }
 
-  showPose(timeline, elements.poses, elements.poses.hopSide);
-  timeline
-    .to(elements.anchor, {
-      left: `${destination.x}%`,
-      top: `${destination.ground - 7}%`,
-      scale: destination.scale * 1.45,
-      duration: 0.48,
-      ease: "power2.out",
-    })
-    .to(
-      elements.body,
-      { rotation: 2, duration: 0.48, ease: "power2.out" },
-      "<",
-    )
-    .to(
-      elements.shadow,
-      {
-        autoAlpha: 0.15,
-        left: `${destination.x}%`,
-        top: `${destination.ground}%`,
-        scale: destination.scale * 0.85,
-        duration: 0.48,
-      },
-      "<",
-    )
-    .to(elements.anchor, {
-      top: `${destination.ground}%`,
-      scale: destination.scale,
-      duration: 0.28,
-      ease: "power2.in",
-    })
-    .to(
-      elements.body,
-      { rotation: 0, duration: 0.28, ease: "power2.in" },
-      "<",
-    )
-    .to(
-      elements.shadow,
-      {
-        autoAlpha: 0,
-        scale: destination.scale,
-        duration: 0.28,
-      },
-      "<",
-    )
-    .to(elements.anchor, { autoAlpha: 0, duration: 0.14 }, "-=0.1");
+  setGroundedState(timeline, elements, start);
+  addHop(
+    timeline,
+    elements,
+    start,
+    intermediateLanding,
+    4.8,
+    elements.poses.landSide,
+    elements.poses.hopSide,
+    1.5,
+  );
+  timeline.to({}, { duration: 0.1 });
+  addHop(
+    timeline,
+    elements,
+    intermediateLanding,
+    destination,
+    3.2,
+    elements.poses.landAway,
+    elements.poses.hopAway,
+    1,
+  );
+  timeline.to([elements.anchor, elements.shadow], {
+    autoAlpha: 0,
+    duration: 0.18,
+    ease: "power2.in",
+  });
 
   return timeline;
 }
