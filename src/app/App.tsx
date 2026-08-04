@@ -230,7 +230,7 @@ export function App() {
 
       <picture
         ref={closeRef}
-        className={`${styles.forest} ${styles.hiddenScene}`}
+        className={`${styles.forest} ${styles.closeScene} ${styles.hiddenScene}`}
         aria-hidden="true"
       >
         <source media="(min-aspect-ratio: 4 / 3)" srcSet={closeStumpLandscape} />

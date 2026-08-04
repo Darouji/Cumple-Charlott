@@ -31,6 +31,15 @@
   object-fit: cover;
 }
 
+.closeScene {
+  overflow: hidden;
+}
+
+.closeScene img {
+  object-position: 50% 52%;
+  transform: scale(1.11);
+  transform-origin: 50% 53%;
+}
 .threshold {
   animation: forest-breathe 22s ease-in-out infinite alternate;
 }

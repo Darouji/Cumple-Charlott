@@ -9,8 +9,7 @@ import {
 } from "../animation/createFairyStoryTimeline";
 import openingPose from "../assets/characters/fairy/frames-v2/push-reach.webp";
 import rabbitPeek from "../assets/characters/rabbit-alert.webp";
-import envelopeOpen from "../assets/props/envelope-open.webp";
-import envelopeSealed from "../assets/props/envelope-flat-perspective.webp";
+import chestClosed from "../assets/props/chest-closed.webp";
 import blankLetter from "../assets/props/invitation-letter.webp";
 import { fairyStoryAssetSources } from "../config/fairyStory.config";
 import type { ExperiencePhase } from "../config/experience.config";
@@ -29,8 +28,8 @@ export function FairyStoryActor({
   const actorRef = useRef<HTMLDivElement>(null);
   const poseRef = useRef<HTMLImageElement>(null);
   const shadowRef = useRef<HTMLDivElement>(null);
-  const envelopeRef = useRef<HTMLImageElement>(null);
-  const openEnvelopeRef = useRef<HTMLImageElement>(null);
+  const chestRef = useRef<HTMLImageElement>(null);
+  const chestShadowRef = useRef<HTMLDivElement>(null);
   const letterRef = useRef<HTMLImageElement>(null);
   const dustRef = useRef<HTMLDivElement>(null);
   const burstRef = useRef<HTMLDivElement>(null);
@@ -44,8 +43,7 @@ export function FairyStoryActor({
   useEffect(() => {
     const preloadSources = [
       ...fairyStoryAssetSources,
-      envelopeSealed,
-      envelopeOpen,
+      chestClosed,
       blankLetter,
       rabbitPeek,
     ];
@@ -62,8 +60,8 @@ export function FairyStoryActor({
     const actor = actorRef.current;
     const pose = poseRef.current;
     const shadow = shadowRef.current;
-    const envelope = envelopeRef.current;
-    const openEnvelope = openEnvelopeRef.current;
+    const chest = chestRef.current;
+    const chestShadow = chestShadowRef.current;
     const letter = letterRef.current;
     const dust = dustRef.current;
     const burst = burstRef.current;
@@ -74,8 +72,8 @@ export function FairyStoryActor({
       !actor ||
       !pose ||
       !shadow ||
-      !envelope ||
-      !openEnvelope ||
+      !chest ||
+      !chestShadow ||
       !letter ||
       !dust ||
       !burst ||
@@ -89,8 +87,8 @@ export function FairyStoryActor({
       actor,
       pose,
       shadow,
-      envelope,
-      openEnvelope,
+      chest,
+      chestShadow,
       letter,
       dust,
       burst,
@@ -137,18 +135,14 @@ export function FairyStoryActor({
         <img ref={rabbitPeekRef} className={styles.rabbitPeek} src={rabbitPeek} alt="" />
       </div>
 
+      <div ref={chestShadowRef} className={styles.chestShadow} />
       <img
-        ref={envelopeRef}
-        className={styles.envelope}
-        src={envelopeSealed}
+        ref={chestRef}
+        className={styles.chest}
+        src={chestClosed}
         alt=""
       />
-      <img
-        ref={openEnvelopeRef}
-        className={`${styles.envelope} ${styles.openEnvelope}`}
-        src={envelopeOpen}
-        alt=""
-      />
+
       <img ref={letterRef} className={styles.letter} src={blankLetter} alt="" />
 
       <div ref={actorRef} className={styles.actor}>

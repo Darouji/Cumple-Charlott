@@ -1,4 +1,6 @@
 import {
+  fairyStoryMirroredPoses,
+  fairyStoryPoseAdjustments,
   fairyStoryPoses,
   type FairyStoryPose,
 } from "../config/fairyStory.config";
@@ -12,7 +14,19 @@ export function setPose(
   image: HTMLImageElement,
   pose: FairyStoryPose,
 ): void {
+  const adjustment = fairyStoryPoseAdjustments[pose];
+
   image.src = fairyStoryPoses[pose];
+  image.style.setProperty("--pose-x", `${adjustment?.x ?? 0}%`);
+  image.style.setProperty("--pose-y", `${adjustment?.y ?? 0}%`);
+  image.style.setProperty(
+    "--pose-rotation",
+    `${adjustment?.rotation ?? 0}deg`,
+  );
+  image.style.setProperty(
+    "--pose-facing",
+    fairyStoryMirroredPoses.has(pose) ? "-1" : "1",
+  );
 }
 
 export function addPoseSequence(

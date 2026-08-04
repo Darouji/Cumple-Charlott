@@ -1,8 +1,8 @@
 .layer {
-  --fairy-right-x: 80%;
-  --fairy-left-x: 20%;
-  --fairy-final-x: 77%;
-  --fairy-overview-x: 61.5%;
+  --fairy-right-x: 82%;
+  --fairy-left-x: 18%;
+  --fairy-final-x: 78%;
+  --fairy-overview-x: 63%;
 
   position: absolute;
   z-index: var(--z-character);
@@ -16,13 +16,18 @@
 .actor {
   position: absolute;
   z-index: 4;
-  width: min(42vw, 24rem);
+  width: min(48vw, 13rem);
   aspect-ratio: 720 / 724;
   transform-origin: 50% 50%;
   will-change: top, left, opacity, transform;
 }
 
 .pose {
+  --pose-x: 0%;
+  --pose-y: 0%;
+  --pose-facing: 1;
+  --pose-rotation: 0deg;
+
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -30,7 +35,10 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0.7rem 0.8rem rgb(0 8 5 / 42%));
+  filter: drop-shadow(0 0.45rem 0.5rem rgb(0 8 5 / 40%));
+  transform: translate3d(var(--pose-x), var(--pose-y), 0)
+    scaleX(var(--pose-facing)) rotate(var(--pose-rotation));
+  transform-origin: 50% 50%;
   user-select: none;
 }
 
@@ -39,58 +47,75 @@
   z-index: 0;
   top: 79%;
   left: 50%;
-  width: 34%;
+  width: 31%;
   aspect-ratio: 3 / 1;
   border-radius: 50%;
   background: radial-gradient(
     ellipse,
-    rgb(0 4 2 / 55%) 0%,
-    rgb(0 4 2 / 24%) 48%,
-    transparent 75%
+    rgb(0 4 2 / 58%) 0%,
+    rgb(0 4 2 / 26%) 46%,
+    transparent 76%
   );
-  filter: blur(0.25rem);
+  filter: blur(0.2rem);
   transform: translate(-50%, -50%);
+  transform-origin: 50% 50%;
 }
 
-.envelope,
+.chest,
 .letter {
   position: absolute;
   display: block;
-  transform-origin: 50% 50%;
   user-select: none;
   will-change: top, left, opacity, transform;
 }
 
-.envelope {
+.chest {
   z-index: 3;
-  left: 49%;
-  top: 57%;
-  width: min(46vw, 28rem);
-  filter: drop-shadow(0 0.8rem 0.65rem rgb(0 4 2 / 55%));
+  left: 48%;
+  top: 53%;
+  width: min(58vw, 18rem);
+  filter: drop-shadow(0 0.45rem 0.4rem rgb(0 5 3 / 34%));
+  transform-origin: 50% 82%;
 }
 
-.openEnvelope {
-  visibility: hidden;
-  opacity: 0;
+.chestShadow {
+  position: absolute;
+  z-index: 2;
+  top: 59.3%;
+  left: 48%;
+  width: min(52vw, 16rem);
+  aspect-ratio: 3.8 / 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgb(0 3 2 / 66%) 0%,
+    rgb(0 3 2 / 34%) 48%,
+    transparent 76%
+  );
+  filter: blur(0.28rem);
+  transform: translate(-50%, -50%) rotate(-1deg);
+  transform-origin: 50% 50%;
 }
+
 
 .letter {
-  z-index: 5;
+  z-index: 7;
   left: 50%;
   top: 54%;
   width: min(78vw, 22rem);
   visibility: hidden;
   opacity: 0;
   filter: drop-shadow(0 1rem 1.3rem rgb(0 4 2 / 58%));
+  transform-origin: 50% 50%;
 }
 
 .rabbitPeekFrame {
   position: absolute;
-  z-index: 2;
+  z-index: 5;
   bottom: 0;
   left: -3%;
-  width: min(29vw, 15rem);
-  height: min(31vw, 16rem);
+  width: min(27vw, 8.5rem);
+  height: min(30vw, 9.5rem);
   overflow: hidden;
   pointer-events: none;
 }
@@ -102,24 +127,24 @@
   display: block;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 0.7rem 0.8rem rgb(0 4 2 / 48%));
+  filter: drop-shadow(0 0.55rem 0.65rem rgb(0 4 2 / 48%));
   transform-origin: 50% 100%;
   animation: rabbit-peek-breathe 2.8s ease-in-out infinite;
 }
 
 .dust {
   position: absolute;
-  z-index: 3;
-  top: 54%;
-  left: 49%;
-  width: min(65vw, 28rem);
+  z-index: 6;
+  top: 52%;
+  left: 48%;
+  width: min(67vw, 21rem);
   aspect-ratio: 1;
   border-radius: 50%;
   background:
     radial-gradient(circle at 42% 34%, rgb(255 248 195 / 95%) 0 1.5%, transparent 2.2%),
     radial-gradient(circle at 63% 48%, rgb(246 215 123 / 90%) 0 1%, transparent 1.8%),
     radial-gradient(circle at 31% 64%, rgb(255 235 155 / 88%) 0 1.2%, transparent 2%),
-    radial-gradient(circle, rgb(246 215 123 / 48%), transparent 62%);
+    radial-gradient(circle, rgb(246 215 123 / 45%), transparent 62%);
   filter: blur(0.12rem) drop-shadow(0 0 1.2rem rgb(246 215 123 / 75%));
   visibility: hidden;
   opacity: 0;
@@ -132,7 +157,7 @@
   inset: -15%;
   border-radius: 50%;
   background: radial-gradient(
-    circle at 50% 54%,
+    circle at 48% 52%,
     rgb(255 253 224 / 100%) 0%,
     rgb(255 226 139 / 78%) 18%,
     rgb(246 215 123 / 30%) 40%,
@@ -140,23 +165,27 @@
   );
   visibility: hidden;
   opacity: 0;
-  transform-origin: 50% 54%;
+  transform-origin: 48% 52%;
 }
 
 @media (min-aspect-ratio: 4 / 3) {
   .layer {
-    --fairy-right-x: 69%;
-    --fairy-left-x: 31%;
+    --fairy-right-x: 68%;
+    --fairy-left-x: 32%;
     --fairy-final-x: 66%;
     --fairy-overview-x: 58%;
   }
 
   .actor {
-    width: min(25vw, 25rem);
+    width: min(25vw, 13rem);
   }
 
-  .envelope {
-    width: min(27vw, 28rem);
+  .chest {
+    width: min(31vw, 18rem);
+  }
+
+  .chestShadow {
+    width: min(28vw, 16rem);
   }
 
   .letter {
@@ -164,8 +193,8 @@
   }
 
   .rabbitPeekFrame {
-    width: min(16vw, 14rem);
-    height: min(17vw, 15rem);
+    width: min(14vw, 8.5rem);
+    height: min(15vw, 9.5rem);
   }
 }
 
