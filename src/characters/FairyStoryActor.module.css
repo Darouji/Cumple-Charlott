@@ -1,4 +1,9 @@
 .layer {
+  --fairy-right-x: 80%;
+  --fairy-left-x: 20%;
+  --fairy-final-x: 77%;
+  --fairy-overview-x: 61.5%;
+
   position: absolute;
   z-index: var(--z-character);
   inset: 0;
@@ -10,17 +15,21 @@
 
 .actor {
   position: absolute;
-  width: clamp(10.5rem, 40vw, 20rem);
-  transform-origin: 50% 100%;
+  z-index: 4;
+  width: min(42vw, 24rem);
+  aspect-ratio: 720 / 724;
+  transform-origin: 50% 50%;
   will-change: top, left, opacity, transform;
 }
 
 .pose {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   filter: drop-shadow(0 0.7rem 0.8rem rgb(0 8 5 / 42%));
   user-select: none;
 }
@@ -28,9 +37,9 @@
 .shadow {
   position: absolute;
   z-index: 0;
-  right: 12%;
-  bottom: 0;
-  width: 58%;
+  top: 79%;
+  left: 50%;
+  width: 34%;
   aspect-ratio: 3 / 1;
   border-radius: 50%;
   background: radial-gradient(
@@ -40,7 +49,7 @@
     transparent 75%
   );
   filter: blur(0.25rem);
-  transform: translateY(42%);
+  transform: translate(-50%, -50%);
 }
 
 .envelope,
@@ -53,9 +62,10 @@
 }
 
 .envelope {
+  z-index: 3;
   left: 49%;
   top: 57%;
-  width: clamp(8.5rem, 34vw, 18rem);
+  width: min(46vw, 28rem);
   filter: drop-shadow(0 0.8rem 0.65rem rgb(0 4 2 / 55%));
 }
 
@@ -65,12 +75,36 @@
 }
 
 .letter {
+  z-index: 5;
   left: 50%;
   top: 54%;
   width: min(78vw, 22rem);
   visibility: hidden;
   opacity: 0;
   filter: drop-shadow(0 1rem 1.3rem rgb(0 4 2 / 58%));
+}
+
+.rabbitPeekFrame {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: -3%;
+  width: min(29vw, 15rem);
+  height: min(31vw, 16rem);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rabbitPeek {
+  position: absolute;
+  bottom: -58%;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0.7rem 0.8rem rgb(0 4 2 / 48%));
+  transform-origin: 50% 100%;
+  animation: rabbit-peek-breathe 2.8s ease-in-out infinite;
 }
 
 .dust {
@@ -110,16 +144,38 @@
 }
 
 @media (min-aspect-ratio: 4 / 3) {
+  .layer {
+    --fairy-right-x: 69%;
+    --fairy-left-x: 31%;
+    --fairy-final-x: 66%;
+    --fairy-overview-x: 58%;
+  }
+
   .actor {
-    width: min(17vw, 18rem);
+    width: min(25vw, 25rem);
   }
 
   .envelope {
-    top: 54%;
-    width: min(17vw, 18rem);
+    width: min(27vw, 28rem);
   }
 
   .letter {
     width: min(30vw, 21rem);
+  }
+
+  .rabbitPeekFrame {
+    width: min(16vw, 14rem);
+    height: min(17vw, 15rem);
+  }
+}
+
+@keyframes rabbit-peek-breathe {
+  0%,
+  100% {
+    transform: translateY(1.5%) rotate(-0.5deg);
+  }
+
+  50% {
+    transform: translateY(0) rotate(0.5deg);
   }
 }

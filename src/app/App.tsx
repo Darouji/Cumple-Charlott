@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import { createSceneTransition } from "../animation/createSceneTransition";
+import closeStumpLandscape from "../assets/forest/fairy-close-stump-landscape.webp";
+import closeStumpPortrait from "../assets/forest/fairy-close-stump-portrait.webp";
 import stageLandscape from "../assets/forest/fairy-stage-landscape.webp";
 import stagePortrait from "../assets/forest/fairy-stage-portrait.webp";
 import thresholdLandscape from "../assets/forest/forest-threshold-landscape-v2.webp";
@@ -26,6 +28,7 @@ export function App() {
   const thresholdRef = useRef<HTMLPictureElement>(null);
   const gladeRef = useRef<HTMLPictureElement>(null);
   const stageRef = useRef<HTMLPictureElement>(null);
+  const closeRef = useRef<HTMLPictureElement>(null);
   const introductionRef = useRef<HTMLElement>(null);
   const discoveryPromptRef = useRef<HTMLElement>(null);
   const listeningPromptRef = useRef<HTMLElement>(null);
@@ -50,34 +53,6 @@ export function App() {
     } else if (phase === "stage-reveal") {
       stagePromptRef.current?.focus({ preventScroll: true });
     }
-  }, [phase]);
-
-  useEffect(() => {
-    if (phase !== "stage-reveal") {
-      return;
-    }
-
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const timeout = window.setTimeout(() => {
-      const prompt = stagePromptRef.current;
-
-      if (!prompt || reducedMotion) {
-        setPhase("fairy-story");
-        return;
-      }
-
-      gsap.to(prompt, {
-        autoAlpha: 0,
-        y: -10,
-        duration: 0.45,
-        ease: "power2.out",
-        onComplete: () => setPhase("fairy-story"),
-      });
-    }, reducedMotion ? 900 : 1950);
-
-    return () => window.clearTimeout(timeout);
   }, [phase]);
 
   const beginSceneTransition = (destination: Destination) => {
@@ -106,6 +81,63 @@ export function App() {
       },
     );
   };
+
+  const beginCloseTransition = () => {
+    const outgoingScene = stageRef.current;
+    const incomingScene = closeRef.current;
+
+    if (!outgoingScene || !incomingScene) {
+      return;
+    }
+
+    setPhase("entering-close");
+    timelineRef.current = createSceneTransition(
+      { outgoingScene, incomingScene },
+      {
+        reducedMotion: window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches,
+        onComplete: () => setPhase("close-reveal"),
+      },
+    );
+  };
+
+  useEffect(() => {
+    if (phase !== "stage-reveal") {
+      return;
+    }
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const timeout = window.setTimeout(() => {
+      const prompt = stagePromptRef.current;
+
+      if (!prompt || reducedMotion) {
+        beginCloseTransition();
+        return;
+      }
+
+      gsap.to(prompt, {
+        autoAlpha: 0,
+        y: -10,
+        duration: 0.45,
+        ease: "power2.out",
+        onComplete: beginCloseTransition,
+      });
+    }, reducedMotion ? 850 : 1850);
+
+    return () => window.clearTimeout(timeout);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "close-reveal") {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setPhase("fairy-story"), 900);
+    return () => window.clearTimeout(timeout);
+  }, [phase]);
 
   const advanceExperience = () => {
     if (phase === "threshold-intro") {
@@ -194,6 +226,15 @@ export function App() {
       >
         <source media="(min-aspect-ratio: 4 / 3)" srcSet={stageLandscape} />
         <img src={stagePortrait} alt="" />
+      </picture>
+
+      <picture
+        ref={closeRef}
+        className={`${styles.forest} ${styles.hiddenScene}`}
+        aria-hidden="true"
+      >
+        <source media="(min-aspect-ratio: 4 / 3)" srcSet={closeStumpLandscape} />
+        <img src={closeStumpPortrait} alt="" />
       </picture>
 
       <PixiScene scene={getActiveScene(phase)} />

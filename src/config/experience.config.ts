@@ -9,6 +9,8 @@ export type ExperiencePhase =
   | "glade-listening"
   | "entering-stage"
   | "stage-reveal"
+  | "entering-close"
+  | "close-reveal"
   | "fairy-story"
   | "invitation-reveal";
 
@@ -43,6 +45,8 @@ export const experienceCopy = {
 export function getActiveScene(phase: ExperiencePhase): SceneId {
   if (
     phase === "stage-reveal" ||
+    phase === "entering-close" ||
+    phase === "close-reveal" ||
     phase === "fairy-story" ||
     phase === "invitation-reveal" ||
     phase === "entering-stage"

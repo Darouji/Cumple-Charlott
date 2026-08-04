@@ -4,11 +4,13 @@ import gsap from "gsap";
 import {
   createFairyStoryTimeline,
   setFairyStoryOpening,
+  setFairyStoryOverview,
   type FairyStoryElements,
 } from "../animation/createFairyStoryTimeline";
-import openingPose from "../assets/characters/fairy/frames/fairy-push-prep.webp";
+import openingPose from "../assets/characters/fairy/frames-v2/push-reach.webp";
+import rabbitPeek from "../assets/characters/rabbit-alert.webp";
 import envelopeOpen from "../assets/props/envelope-open.webp";
-import envelopeSealed from "../assets/props/envelope-sealed-ornate.webp";
+import envelopeSealed from "../assets/props/envelope-flat-perspective.webp";
 import blankLetter from "../assets/props/invitation-letter.webp";
 import { fairyStoryAssetSources } from "../config/fairyStory.config";
 import type { ExperiencePhase } from "../config/experience.config";
@@ -32,6 +34,7 @@ export function FairyStoryActor({
   const letterRef = useRef<HTMLImageElement>(null);
   const dustRef = useRef<HTMLDivElement>(null);
   const burstRef = useRef<HTMLDivElement>(null);
+  const rabbitPeekRef = useRef<HTMLImageElement>(null);
   const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
@@ -44,6 +47,7 @@ export function FairyStoryActor({
       envelopeSealed,
       envelopeOpen,
       blankLetter,
+      rabbitPeek,
     ];
 
     for (const source of preloadSources) {
@@ -63,6 +67,7 @@ export function FairyStoryActor({
     const letter = letterRef.current;
     const dust = dustRef.current;
     const burst = burstRef.current;
+    const rabbit = rabbitPeekRef.current;
 
     if (
       !layer ||
@@ -73,7 +78,8 @@ export function FairyStoryActor({
       !openEnvelope ||
       !letter ||
       !dust ||
-      !burst
+      !burst ||
+      !rabbit
     ) {
       return;
     }
@@ -88,12 +94,18 @@ export function FairyStoryActor({
       letter,
       dust,
       burst,
+      rabbit,
     };
     const animatedElements = Object.values(elements);
 
     gsap.killTweensOf(animatedElements);
 
     if (phase === "stage-reveal") {
+      setFairyStoryOverview(elements);
+      return;
+    }
+
+    if (phase === "close-reveal") {
       setFairyStoryOpening(elements);
       return;
     }
@@ -121,6 +133,9 @@ export function FairyStoryActor({
     <div ref={layerRef} className={styles.layer} aria-hidden="true">
       <div ref={dustRef} className={styles.dust} />
       <div ref={burstRef} className={styles.burst} />
+      <div className={styles.rabbitPeekFrame}>
+        <img ref={rabbitPeekRef} className={styles.rabbitPeek} src={rabbitPeek} alt="" />
+      </div>
 
       <img
         ref={envelopeRef}
