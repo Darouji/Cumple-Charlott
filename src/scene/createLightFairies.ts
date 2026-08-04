@@ -24,8 +24,14 @@ interface LightFairyVisual {
 interface LightFairy extends LightFairyVisual {
   readonly scene: SceneId;
   readonly placement: LightFairyPlacement;
-  readonly phase: number;
+  readonly phaseX: number;
+  readonly phaseY: number;
+  readonly phaseWobble: number;
   readonly speed: number;
+  readonly frequencyX: number;
+  readonly frequencyY: number;
+  readonly wobbleFrequency: number;
+  readonly direction: 1 | -1;
   readonly flutterSpeed: number;
   currentAlpha: number;
   targetAlpha: number;
@@ -107,14 +113,19 @@ export function createLightFairySwarm(
   ).flatMap(([scene, placements]) =>
     placements.map((placement) => {
       const visual = createLightFairyView(colors);
-      const phase = random() * Math.PI * 2;
       const fairy: LightFairy = {
         ...visual,
         scene,
         placement,
-        phase,
+        phaseX: random() * Math.PI * 2,
+        phaseY: random() * Math.PI * 2,
+        phaseWobble: random() * Math.PI * 2,
         speed: placement.speed * (0.88 + random() * 0.24),
-        flutterSpeed: 10 + random() * 4,
+        frequencyX: 0.62 + random() * 0.92,
+        frequencyY: 0.58 + random() * 0.88,
+        wobbleFrequency: 1.7 + random() * 1.55,
+        direction: random() > 0.5 ? 1 : -1,
+        flutterSpeed: 9.5 + random() * 6,
         currentAlpha: scene === initialScene ? placement.alpha : 0,
         targetAlpha: scene === initialScene ? placement.alpha : 0,
         previousX: placement.x,
@@ -164,22 +175,31 @@ export function createLightFairySwarm(
       }
 
       fairy.view.visible = true;
-      const time = elapsedSeconds * fairy.speed + fairy.phase;
-      const orbitScale = motionScale * fairy.placement.scale;
+      const time = elapsedSeconds * fairy.speed * fairy.direction;
+      const dartWave = Math.sin(
+        time * fairy.wobbleFrequency + fairy.phaseWobble,
+      );
+      const dart = Math.sign(dartWave) * Math.abs(dartWave) ** 7;
       const nextX =
         fairy.placement.x +
-        Math.sin(time) * fairy.placement.orbitX * orbitScale +
-        Math.sin(time * 0.43 + fairy.phase) *
+        Math.sin(time * fairy.frequencyX + fairy.phaseX) *
           fairy.placement.orbitX *
-          0.28 *
-          orbitScale;
+          motionScale +
+        Math.sin(time * 0.37 + fairy.phaseY) *
+          fairy.placement.orbitX *
+          0.34 *
+          motionScale +
+        dart * fairy.placement.orbitX * 0.2 * motionScale;
       const nextY =
         fairy.placement.y +
-        Math.cos(time * 0.72) * fairy.placement.orbitY * orbitScale +
-        Math.sin(time * 1.31 + fairy.phase) *
+        Math.cos(time * fairy.frequencyY + fairy.phaseY) *
           fairy.placement.orbitY *
-          0.18 *
-          orbitScale;
+          motionScale +
+        Math.sin(time * 1.43 + fairy.phaseWobble) *
+          fairy.placement.orbitY *
+          0.3 *
+          motionScale -
+        dart * fairy.placement.orbitY * 0.16 * motionScale;
       const velocityX = Math.max(
         -2.5,
         Math.min(2.5, nextX - fairy.previousX),
@@ -190,12 +210,15 @@ export function createLightFairySwarm(
       );
       const flutter =
         0.28 +
-        Math.abs(Math.sin(elapsedSeconds * fairy.flutterSpeed + fairy.phase)) *
+        Math.abs(
+          Math.sin(elapsedSeconds * fairy.flutterSpeed + fairy.phaseWobble),
+        ) *
           0.72;
-      const pulse = 0.88 + Math.sin(time * 2.1) * 0.12;
+      const pulse =
+        0.88 + Math.sin(time * 2.1 + fairy.phaseX) * 0.12;
 
       fairy.view.position.set(nextX, nextY);
-      fairy.view.rotation = Math.atan2(velocityY, velocityX) * 0.08;
+      fairy.view.rotation = Math.atan2(velocityY, velocityX) * 0.16;
       fairy.wings.scale.y = reducedMotion ? 0.7 : flutter;
       fairy.glow.scale.set(pulse);
       fairy.core.scale.set(0.96 + (pulse - 0.88) * 0.65);

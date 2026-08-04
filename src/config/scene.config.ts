@@ -12,23 +12,23 @@ export interface LightFairyPlacement {
 
 const lightFairyPlacements = {
   threshold: [
-    { x: 155, y: 710, scale: 0.72, orbitX: 72, orbitY: 48, speed: 0.72, alpha: 0.76 },
-    { x: 875, y: 765, scale: 0.58, orbitX: 54, orbitY: 68, speed: 0.86, alpha: 0.64 },
-    { x: 825, y: 1190, scale: 0.88, orbitX: 82, orbitY: 52, speed: 0.64, alpha: 0.72 },
+    { x: 155, y: 710, scale: 1.7, orbitX: 135, orbitY: 92, speed: 0.72, alpha: 0.84 },
+    { x: 875, y: 765, scale: 1.45, orbitX: 110, orbitY: 128, speed: 0.86, alpha: 0.76 },
+    { x: 825, y: 1190, scale: 1.95, orbitX: 145, orbitY: 96, speed: 0.64, alpha: 0.84 },
   ],
   glade: [
-    { x: 150, y: 720, scale: 0.6, orbitX: 65, orbitY: 58, speed: 0.78, alpha: 0.66 },
-    { x: 890, y: 690, scale: 0.7, orbitX: 72, orbitY: 46, speed: 0.7, alpha: 0.72 },
-    { x: 335, y: 930, scale: 0.9, orbitX: 86, orbitY: 72, speed: 0.58, alpha: 0.82 },
-    { x: 735, y: 980, scale: 0.78, orbitX: 76, orbitY: 62, speed: 0.74, alpha: 0.76 },
-    { x: 185, y: 1240, scale: 0.95, orbitX: 64, orbitY: 48, speed: 0.66, alpha: 0.8 },
-    { x: 875, y: 1260, scale: 0.68, orbitX: 58, orbitY: 76, speed: 0.82, alpha: 0.68 },
+    { x: 150, y: 720, scale: 1.4, orbitX: 125, orbitY: 112, speed: 0.78, alpha: 0.76 },
+    { x: 890, y: 690, scale: 1.55, orbitX: 142, orbitY: 90, speed: 0.7, alpha: 0.8 },
+    { x: 335, y: 930, scale: 2.05, orbitX: 165, orbitY: 135, speed: 0.58, alpha: 0.9 },
+    { x: 735, y: 980, scale: 1.75, orbitX: 148, orbitY: 118, speed: 0.74, alpha: 0.84 },
+    { x: 185, y: 1240, scale: 2.15, orbitX: 120, orbitY: 94, speed: 0.66, alpha: 0.9 },
+    { x: 875, y: 1260, scale: 1.55, orbitX: 116, orbitY: 142, speed: 0.82, alpha: 0.78 },
   ],
   stage: [
-    { x: 190, y: 780, scale: 0.68, orbitX: 64, orbitY: 54, speed: 0.7, alpha: 0.7 },
-    { x: 855, y: 765, scale: 0.62, orbitX: 56, orbitY: 72, speed: 0.84, alpha: 0.66 },
-    { x: 285, y: 1110, scale: 0.92, orbitX: 78, orbitY: 62, speed: 0.62, alpha: 0.82 },
-    { x: 795, y: 1190, scale: 0.84, orbitX: 70, orbitY: 48, speed: 0.76, alpha: 0.76 },
+    { x: 190, y: 780, scale: 1.55, orbitX: 122, orbitY: 102, speed: 0.7, alpha: 0.8 },
+    { x: 855, y: 765, scale: 1.45, orbitX: 108, orbitY: 138, speed: 0.84, alpha: 0.76 },
+    { x: 285, y: 1110, scale: 2.1, orbitX: 152, orbitY: 118, speed: 0.62, alpha: 0.9 },
+    { x: 795, y: 1190, scale: 1.9, orbitX: 138, orbitY: 96, speed: 0.76, alpha: 0.86 },
   ],
 } as const satisfies Record<SceneId, readonly LightFairyPlacement[]>;
 
