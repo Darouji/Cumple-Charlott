@@ -1,38 +1,35 @@
+import burstPeek from "../assets/characters/fairy/frames-v2/burst-peek.webp";
+import burstPushback from "../assets/characters/fairy/frames-v2/burst-pushback.webp";
+import burstShield from "../assets/characters/fairy/frames-v2/burst-shield.webp";
+import finalWave from "../assets/characters/fairy/frames-v2/final-wave.webp";
+import flyAcross from "../assets/characters/fairy/frames-v2/fly-across.webp";
+import hoverLow from "../assets/characters/fairy/frames-v2/hover-low.webp";
+import liftCorner from "../assets/characters/fairy/frames-v2/lift-corner.webp";
+import liftCrouch from "../assets/characters/fairy/frames-v2/lift-crouch.webp";
+import magicHopeful from "../assets/characters/fairy/frames-v2/magic-hopeful.webp";
+import magicIdea from "../assets/characters/fairy/frames-v2/magic-idea.webp";
+import magicMeasure from "../assets/characters/fairy/frames-v2/magic-measure.webp";
+import magicNotEnough from "../assets/characters/fairy/frames-v2/magic-not-enough.webp";
+import magicRetrieve from "../assets/characters/fairy/frames-v2/magic-retrieve.webp";
+import magicSecondPouch from "../assets/characters/fairy/frames-v2/magic-second-pouch.webp";
+import magicSprinkle from "../assets/characters/fairy/frames-v2/magic-sprinkle.webp";
+import pouchHold from "../assets/characters/fairy/frames-v2/pouch-hold.webp";
+import pouchReach from "../assets/characters/fairy/frames-v2/pouch-reach.webp";
+import pouchSlip from "../assets/characters/fairy/frames-v2/pouch-slip.webp";
+import pouchSpill from "../assets/characters/fairy/frames-v2/pouch-spill.webp";
+import takeoffLow from "../assets/characters/fairy/frames-v2/takeoff-low.webp";
+
 export const fairyStoryPoseNames = [
-  "push-reach",
-  "push-contact",
-  "push-drive",
-  "push-max",
-  "recover-breath",
-  "hip-turn",
-  "hip-grip",
-  "hip-brace",
-  "hip-drive",
-  "hip-push",
-  "hip-max",
-  "hip-stumble",
+  "magic-idea",
   "lift-crouch",
   "lift-corner",
-  "inspect-ground",
   "takeoff-low",
-  "hover-low",
   "fly-across",
-  "descend-left",
-  "land-left",
-  "pull-grip",
-  "pull-step",
-  "pull-max",
-  "pull-slip",
-  "fall-airborne",
-  "fall-impact",
-  "fall-rebound",
-  "fall-seated",
-  "magic-idea",
+  "hover-low",
   "magic-retrieve",
   "magic-measure",
   "magic-sprinkle",
   "magic-hopeful",
-  "magic-pull",
   "magic-not-enough",
   "magic-second-pouch",
   "pouch-hold",
@@ -47,52 +44,38 @@ export const fairyStoryPoseNames = [
 
 export type FairyStoryPose = (typeof fairyStoryPoseNames)[number];
 
-const poseFiles = import.meta.glob<string>(
-  "../assets/characters/fairy/frames-v2/*.webp",
-  { eager: true, query: "?url", import: "default" },
-);
-
-function getPoseSource(pose: FairyStoryPose): string {
-  const source = poseFiles[
-    `../assets/characters/fairy/frames-v2/${pose}.webp`
-  ];
-
-  if (!source) {
-    throw new Error(`No se encontró el fotograma del hada: ${pose}`);
-  }
-
-  return source;
-}
-
-export const fairyStoryPoses = Object.fromEntries(
-  fairyStoryPoseNames.map((pose) => [pose, getPoseSource(pose)]),
-) as Record<FairyStoryPose, string>;
+export const fairyStoryPoses = {
+  "magic-idea": magicIdea,
+  "lift-crouch": liftCrouch,
+  "lift-corner": liftCorner,
+  "takeoff-low": takeoffLow,
+  "fly-across": flyAcross,
+  "hover-low": hoverLow,
+  "magic-retrieve": magicRetrieve,
+  "magic-measure": magicMeasure,
+  "magic-sprinkle": magicSprinkle,
+  "magic-hopeful": magicHopeful,
+  "magic-not-enough": magicNotEnough,
+  "magic-second-pouch": magicSecondPouch,
+  "pouch-hold": pouchHold,
+  "pouch-slip": pouchSlip,
+  "pouch-reach": pouchReach,
+  "pouch-spill": pouchSpill,
+  "burst-shield": burstShield,
+  "burst-pushback": burstPushback,
+  "burst-peek": burstPeek,
+  "final-wave": finalWave,
+} as const satisfies Record<FairyStoryPose, string>;
 
 export const fairyStorySequences = {
-  handPush: fairyStoryPoseNames.slice(0, 4),
-  hipPreparation: fairyStoryPoseNames.slice(4, 8),
-  hipPush: fairyStoryPoseNames.slice(8, 12),
-  takeoff: fairyStoryPoseNames.slice(12, 16),
-  crossToLeft: fairyStoryPoseNames.slice(16, 20),
-  pull: fairyStoryPoseNames.slice(20, 24),
-  fall: fairyStoryPoseNames.slice(24, 28),
-  firstMagic: fairyStoryPoseNames.slice(28, 32),
-  secondMagic: fairyStoryPoseNames.slice(32, 36),
-  pouchAccident: fairyStoryPoseNames.slice(36, 40),
-  finale: fairyStoryPoseNames.slice(40, 44),
+  measuredMagic: ["magic-retrieve", "magic-measure", "magic-sprinkle"],
+  pouchAccident: ["pouch-hold", "pouch-slip", "pouch-reach", "pouch-spill"],
+  finaleReaction: ["burst-shield", "burst-pushback", "burst-peek"],
 } as const satisfies Record<string, readonly FairyStoryPose[]>;
 
 export const fairyStoryAssetSources = Object.values(fairyStoryPoses);
 
-export const fairyStoryMirroredPoses = new Set<FairyStoryPose>([
-  "hip-turn",
-  "hip-grip",
-  "hip-brace",
-  "hip-drive",
-  "hip-push",
-  "hip-max",
-  "hip-stumble",
-]);
+export const fairyStoryMirroredPoses = new Set<FairyStoryPose>();
 
 interface FairyStoryPoseAdjustment {
   readonly x?: number;
@@ -103,36 +86,76 @@ interface FairyStoryPoseAdjustment {
 export const fairyStoryPoseAdjustments: Partial<
   Record<FairyStoryPose, FairyStoryPoseAdjustment>
 > = {
-  "push-reach": { x: 2, y: 1 },
-  "push-contact": { x: -1, y: 1 },
-  "push-drive": { x: -3, y: 1 },
-  "push-max": { x: -5, y: 1 },
-  "hip-turn": { x: -2, y: 2 },
-  "hip-grip": { x: -3, y: 1 },
-  "hip-brace": { x: -4, y: 1 },
-  "hip-drive": { x: -5, y: 1 },
-  "hip-push": { x: -6, y: 2 },
-  "hip-max": { x: -7, y: 2 },
-  "hip-stumble": { x: -2, y: 1 },
-  "pull-grip": { x: 2, y: 2 },
-  "pull-step": { x: 4, y: 2 },
-  "pull-max": { x: 6, y: 2 },
-  "pull-slip": { x: 5, y: 1 },
-  "fall-impact": { y: 3 },
-  "fall-seated": { y: 3 },
+  "lift-crouch": { y: -2.5 },
+  "lift-corner": { y: -3.7 },
+  "takeoff-low": { x: -0.15, y: 14.9 },
+  "fly-across": { x: -0.1, y: 11.6 },
+  "hover-low": { x: -0.15, y: 6.1 },
+  "magic-retrieve": { x: -0.15, y: 0.4 },
+  "magic-measure": { x: -0.1, y: -7.6 },
+  "magic-sprinkle": { y: -8 },
+  "magic-hopeful": { x: -0.15, y: -3.9 },
+  "magic-not-enough": { x: -0.1, y: -5.1 },
+  "magic-second-pouch": { x: -0.15, y: -3.7 },
+  "pouch-hold": { x: -0.1, y: -5.5 },
+  "pouch-slip": { x: -0.1, y: -0.8 },
+  "pouch-reach": { x: -0.1, y: -1.5 },
+  "pouch-spill": { x: -0.1, y: -0.1 },
+  "burst-shield": { x: -0.1, y: -8.4 },
+  "burst-pushback": { x: -0.1, y: -1.8 },
+  "burst-peek": { x: -0.1, y: -5.2 },
+  "final-wave": { x: -0.1, y: -5.4 },
 };
+
+interface ResponsivePoint {
+  readonly portrait: {
+    readonly x: number;
+    readonly y: number;
+  };
+  readonly wide: {
+    readonly x: number;
+    readonly y: number;
+  };
+}
+
+const point = (
+  portraitX: number,
+  portraitY: number,
+  wideX = portraitX,
+  wideY = portraitY,
+): ResponsivePoint => ({
+  portrait: { x: portraitX, y: portraitY },
+  wide: { x: wideX, y: wideY },
+});
 
 export const fairyStoryLayout = {
   close: {
-    chest: { left: "48%", top: "53%", rotation: -1 },
-    rightActor: { left: "var(--fairy-right-x)", top: "50.5%" },
-    leftActor: { left: "var(--fairy-left-x)", top: "50.5%" },
+    chest: point(48, 53.5),
+    actor: point(70, 50.5, 60, 50.5),
   },
   overview: {
-    chest: { left: "49%", top: "55%", scale: 0.32 },
-    actor: { left: "var(--fairy-overview-x)", top: "53%", scale: 0.32 },
-  },  frame: {
+    chest: point(56.5, 54.5, 56, 54.5),
+    actor: point(64, 53.5, 60, 53.5),
+    scale: 0.34,
+  },
+  lift: {
+    actor: point(70, 38.5, 60, 38.5),
+  },
+  air: {
+    actor: point(49.5, 31.5),
+  },
+  wait: {
+    actor: point(67, 34, 65, 34),
+    idea: point(67, 22, 65, 21),
+  },
+  openingIdea: point(70, 39, 60, 39),
+  final: {
+    actor: point(80, 23, 78, 24),
+  },
+  frame: {
     width: 720,
     height: 724,
   },
 } as const;
+
+export type FairyStoryResponsivePoint = ResponsivePoint;

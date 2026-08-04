@@ -1,16 +1,79 @@
-import { useState } from "react";
+import {
+  Fragment,
+  useState,
+  type CSSProperties,
+} from "react";
 
-import letterTexture from "../assets/props/invitation-letter.webp";
 import { invitationConfig } from "../config/invitation.config";
 import styles from "./InvitationLetter.module.css";
 
+type GlyphStyle = CSSProperties & {
+  "--glyph-delay": string;
+};
+
+interface MagicLineProps {
+  readonly children: string | number | readonly (string | number)[];
+  readonly className: string;
+  readonly startMs: number;
+  readonly stepMs?: number;
+}
+
+function MagicLine({
+  children,
+  className,
+  startMs,
+  stepMs = 48,
+}: MagicLineProps) {
+  const text = Array.isArray(children) ? children.join("") : String(children);
+  const words = text.split(" ");
+  let glyphOffset = 0;
+
+  return (
+    <span className={[styles.line, className].join(" ")}>
+      <span className={styles.visualWriting} aria-hidden="true">
+        {words.map((word, wordIndex) => {
+          const wordOffset = glyphOffset;
+          glyphOffset += Array.from(word).length + 1;
+
+          return (
+            <Fragment key={`${word}-${wordIndex}`}>
+              <span className={styles.word}>
+                {Array.from(word).map((glyph, glyphIndex) => (
+                  <span
+                    key={`${glyph}-${glyphIndex}`}
+                    className={styles.glyph}
+                    style={
+                      {
+                        "--glyph-delay": `${
+                          startMs + (wordOffset + glyphIndex) * stepMs
+                        }ms`,
+                      } as GlyphStyle
+                    }
+                  >
+                    {glyph}
+                  </span>
+                ))}
+              </span>
+              {wordIndex < words.length - 1 ? (
+                <span className={styles.space}> </span>
+              ) : null}
+            </Fragment>
+          );
+        })}
+      </span>
+      <span className={styles.srOnly}>{text}</span>
+    </span>
+  );
+}
+
 export function InvitationLetter() {
   const [showDetails, setShowDetails] = useState(false);
+  const page = showDetails ? "details" : "announcement";
 
   return (
     <section className={styles.layer} aria-live="polite">
       <button
-        className={`${styles.card} ${showDetails ? styles.details : ""}`}
+        className={styles.spell}
         type="button"
         onClick={() => setShowDetails((current) => !current)}
         aria-label={
@@ -18,36 +81,72 @@ export function InvitationLetter() {
             ? "Volver al anuncio de cumpleaños"
             : "Ver la fecha y el lugar de la celebración"
         }
+      >
+        <span className={styles.halo} aria-hidden="true" />
+        <span
+          className={[styles.spark, styles.sparkOne].join(" ")}
+          aria-hidden="true"
         >
-          <img className={styles.paper} src={letterTexture} alt="" />
-          <img
-            className={`${styles.paper} ${styles.paperBack}`}
-            src={letterTexture}
-            alt=""
-          />
-
-        <span className={`${styles.face} ${styles.front}`}>
-          <span className={styles.sparkle}>✦</span>
-          <span className={styles.opening}>{invitationConfig.letter.opening}</span>
-          <strong>
-            {invitationConfig.honoree} cumple {invitationConfig.age} años
-          </strong>
-          <span>{invitationConfig.letter.message}</span>
+          ✦
+        </span>
+        <span
+          className={[styles.spark, styles.sparkTwo].join(" ")}
+          aria-hidden="true"
+        >
+          ✧
+        </span>
+        <span
+          className={[styles.spark, styles.sparkThree].join(" ")}
+          aria-hidden="true"
+        >
+          ✦
+        </span>
+        <span
+          className={[styles.spark, styles.sparkFour].join(" ")}
+          aria-hidden="true"
+        >
+          ·
         </span>
 
-        <span className={`${styles.face} ${styles.back}`}>
-          <span className={styles.sparkle}>✦</span>
-          <strong>{invitationConfig.date.display}</strong>
-          <span>{invitationConfig.time}</span>
-          <span>{invitationConfig.address}</span>
-          <span className={styles.farewell}>
-            {invitationConfig.letter.farewell} ✦
-          </span>
+        <span key={page} className={styles.writing}>
+          {showDetails ? (
+            <>
+              <MagicLine className={styles.eyebrow} startMs={220} stepMs={54}>
+                Guarda esta fecha
+              </MagicLine>
+              <MagicLine className={styles.date} startMs={1450} stepMs={46}>
+                {invitationConfig.date.display}
+              </MagicLine>
+              <MagicLine className={styles.time} startMs={3150} stepMs={58}>
+                {invitationConfig.time}
+              </MagicLine>
+              <MagicLine className={styles.address} startMs={4100} stepMs={52}>
+                {invitationConfig.address}
+              </MagicLine>
+              <MagicLine className={styles.farewell} startMs={5300} stepMs={62}>
+                {invitationConfig.letter.farewell} ✦
+              </MagicLine>
+            </>
+          ) : (
+            <>
+              <MagicLine className={styles.eyebrow} startMs={220} stepMs={42}>
+                ✦ {invitationConfig.letter.opening} ✦
+              </MagicLine>
+              <MagicLine className={styles.title} startMs={2300} stepMs={54}>
+                {invitationConfig.honoree} cumple {invitationConfig.age} años
+              </MagicLine>
+              <MagicLine className={styles.message} startMs={4050} stepMs={46}>
+                Y nos encantaría celebrarlo contigo.
+              </MagicLine>
+            </>
+          )}
         </span>
       </button>
 
-      <p className={styles.cue}>
-        {showDetails ? "Toca la carta para volver" : "Toca la carta para ver los detalles"}
+      <p key={`cue-${page}`} className={styles.cue}>
+        {showDetails
+          ? "Toca para volver al comienzo"
+          : "Toca para descubrir cuándo y dónde"}
       </p>
     </section>
   );
