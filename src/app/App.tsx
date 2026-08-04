@@ -8,6 +8,8 @@ import thresholdLandscape from "../assets/forest/forest-threshold-landscape-v2.w
 import thresholdPortrait from "../assets/forest/forest-threshold-portrait-v2.webp";
 import gladeLandscape from "../assets/forest/hidden-glade-landscape.webp";
 import gladePortrait from "../assets/forest/hidden-glade-portrait.webp";
+import { FairyStoryActor } from "../characters/FairyStoryActor";
+import { InvitationLetter } from "../characters/InvitationLetter";
 import { RabbitActor } from "../characters/RabbitActor";
 import {
   experienceCopy,
@@ -26,6 +28,7 @@ export function App() {
   const stageRef = useRef<HTMLPictureElement>(null);
   const introductionRef = useRef<HTMLElement>(null);
   const discoveryPromptRef = useRef<HTMLElement>(null);
+  const listeningPromptRef = useRef<HTMLElement>(null);
   const stagePromptRef = useRef<HTMLElement>(null);
   const interactionRef = useRef<HTMLButtonElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
@@ -40,12 +43,41 @@ export function App() {
     if (
       phase === "threshold-intro" ||
       phase === "threshold-ready" ||
-      phase === "glade-prompt"
+      phase === "glade-prompt" ||
+      phase === "glade-listening"
     ) {
       interactionRef.current?.focus({ preventScroll: true });
     } else if (phase === "stage-reveal") {
       stagePromptRef.current?.focus({ preventScroll: true });
     }
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "stage-reveal") {
+      return;
+    }
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const timeout = window.setTimeout(() => {
+      const prompt = stagePromptRef.current;
+
+      if (!prompt || reducedMotion) {
+        setPhase("fairy-story");
+        return;
+      }
+
+      gsap.to(prompt, {
+        autoAlpha: 0,
+        y: -10,
+        duration: 0.45,
+        ease: "power2.out",
+        onComplete: () => setPhase("fairy-story"),
+      });
+    }, reducedMotion ? 900 : 1950);
+
+    return () => window.clearTimeout(timeout);
   }, [phase]);
 
   const beginSceneTransition = (destination: Destination) => {
@@ -100,6 +132,17 @@ export function App() {
       }
 
       setPhase("glade-journey");
+    } else if (phase === "glade-listening") {
+      if (listeningPromptRef.current) {
+        gsap.to(listeningPromptRef.current, {
+          autoAlpha: 0,
+          y: 12,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+
+      beginSceneTransition("stage");
     }
   };
 
@@ -108,7 +151,21 @@ export function App() {
       ? experienceCopy.interaction.continue
       : phase === "threshold-ready" || phase === "glade-prompt"
         ? experienceCopy.interaction.follow
-        : null;
+        : phase === "glade-listening"
+          ? experienceCopy.interaction.approach
+          : null;
+
+  const handleRabbitJourneyComplete = () => {
+    setPhase("glade-listening");
+
+    if (listeningPromptRef.current) {
+      gsap.fromTo(
+        listeningPromptRef.current,
+        { autoAlpha: 0, y: 12 },
+        { autoAlpha: 1, y: 0, duration: 0.65, ease: "power2.out" },
+      );
+    }
+  };
 
   return (
     <main className={styles.app}>
@@ -144,7 +201,11 @@ export function App() {
         phase={phase}
         onArrivalComplete={() => setPhase("threshold-ready")}
         onThresholdExitComplete={() => beginSceneTransition("glade")}
-        onJourneyComplete={() => beginSceneTransition("stage")}
+        onJourneyComplete={handleRabbitJourneyComplete}
+      />
+      <FairyStoryActor
+        phase={phase}
+        onComplete={() => setPhase("invitation-reveal")}
       />
       <div className={styles.atmosphere} aria-hidden="true" />
 
@@ -168,8 +229,20 @@ export function App() {
         aria-live="polite"
         aria-hidden={phase !== "glade-prompt"}
       >
-        <p>{experienceCopy.glade}</p>
+        <p>{experienceCopy.glade.prompt}</p>
       </section>
+
+      <section
+        ref={listeningPromptRef}
+        className={styles.scenePrompt}
+        tabIndex={-1}
+        aria-live="polite"
+        aria-hidden={phase !== "glade-listening"}
+      >
+        <p>{experienceCopy.glade.listening}</p>
+      </section>
+
+      {phase === "invitation-reveal" ? <InvitationLetter /> : null}
 
       <section
         ref={stagePromptRef}

@@ -1,0 +1,125 @@
+.layer {
+  position: absolute;
+  z-index: var(--z-character);
+  inset: 0;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.actor {
+  position: absolute;
+  width: clamp(10.5rem, 40vw, 20rem);
+  transform-origin: 50% 100%;
+  will-change: top, left, opacity, transform;
+}
+
+.pose {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0.7rem 0.8rem rgb(0 8 5 / 42%));
+  user-select: none;
+}
+
+.shadow {
+  position: absolute;
+  z-index: 0;
+  right: 12%;
+  bottom: 0;
+  width: 58%;
+  aspect-ratio: 3 / 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgb(0 4 2 / 55%) 0%,
+    rgb(0 4 2 / 24%) 48%,
+    transparent 75%
+  );
+  filter: blur(0.25rem);
+  transform: translateY(42%);
+}
+
+.envelope,
+.letter {
+  position: absolute;
+  display: block;
+  transform-origin: 50% 50%;
+  user-select: none;
+  will-change: top, left, opacity, transform;
+}
+
+.envelope {
+  left: 49%;
+  top: 57%;
+  width: clamp(8.5rem, 34vw, 18rem);
+  filter: drop-shadow(0 0.8rem 0.65rem rgb(0 4 2 / 55%));
+}
+
+.openEnvelope {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.letter {
+  left: 50%;
+  top: 54%;
+  width: min(78vw, 22rem);
+  visibility: hidden;
+  opacity: 0;
+  filter: drop-shadow(0 1rem 1.3rem rgb(0 4 2 / 58%));
+}
+
+.dust {
+  position: absolute;
+  z-index: 3;
+  top: 54%;
+  left: 49%;
+  width: min(65vw, 28rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 42% 34%, rgb(255 248 195 / 95%) 0 1.5%, transparent 2.2%),
+    radial-gradient(circle at 63% 48%, rgb(246 215 123 / 90%) 0 1%, transparent 1.8%),
+    radial-gradient(circle at 31% 64%, rgb(255 235 155 / 88%) 0 1.2%, transparent 2%),
+    radial-gradient(circle, rgb(246 215 123 / 48%), transparent 62%);
+  filter: blur(0.12rem) drop-shadow(0 0 1.2rem rgb(246 215 123 / 75%));
+  visibility: hidden;
+  opacity: 0;
+  translate: -50% -50%;
+}
+
+.burst {
+  position: absolute;
+  z-index: 8;
+  inset: -15%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 54%,
+    rgb(255 253 224 / 100%) 0%,
+    rgb(255 226 139 / 78%) 18%,
+    rgb(246 215 123 / 30%) 40%,
+    transparent 68%
+  );
+  visibility: hidden;
+  opacity: 0;
+  transform-origin: 50% 54%;
+}
+
+@media (min-aspect-ratio: 4 / 3) {
+  .actor {
+    width: min(17vw, 18rem);
+  }
+
+  .envelope {
+    top: 54%;
+    width: min(17vw, 18rem);
+  }
+
+  .letter {
+    width: min(30vw, 21rem);
+  }
+}
