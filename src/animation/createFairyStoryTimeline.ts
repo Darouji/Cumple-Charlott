@@ -37,7 +37,7 @@ export function setFairyStoryOverview(
 ): void {
   const { overview } = fairyStoryLayout;
 
-  setPose(elements.pose, "push-contact");
+  setPose(elements.pose, "magic-idea");
   gsap.set(elements.layer, { autoAlpha: 1 });
   gsap.set(elements.actor, {
     autoAlpha: 1,
@@ -47,9 +47,10 @@ export function setFairyStoryOverview(
     yPercent: -50,
     x: 0,
     y: 0,
+    rotation: 0,
     scale: overview.actor.scale,
   });
-  gsap.set(elements.shadow, { autoAlpha: 0.38, scale: 0.82 });
+  gsap.set(elements.shadow, { autoAlpha: 0.34, x: 0, y: 0, scale: 0.72 });
   gsap.set(elements.chest, {
     autoAlpha: 1,
     left: overview.chest.left,
@@ -58,7 +59,7 @@ export function setFairyStoryOverview(
     yPercent: -50,
     x: 0,
     y: 0,
-    rotation: -1,
+    rotation: 0,
     scale: overview.chest.scale,
   });
   gsap.set(elements.chestShadow, {
@@ -67,6 +68,9 @@ export function setFairyStoryOverview(
     top: "58.2%",
     xPercent: -50,
     yPercent: -50,
+    x: 0,
+    y: 0,
+    rotation: 0,
     scale: overview.chest.scale,
   });
   gsap.set([...hiddenRevealElements(elements), elements.rabbit], {
@@ -101,7 +105,7 @@ export function setFairyStoryOpening(
     yPercent: -50,
     x: 0,
     y: 0,
-    rotation: close.chest.rotation,
+    rotation: 0,
     scale: 1,
   });
   gsap.set(elements.chestShadow, {
@@ -112,6 +116,7 @@ export function setFairyStoryOpening(
     yPercent: -50,
     x: 0,
     y: 0,
+    rotation: 0,
     scale: 1,
   });
   gsap.set(elements.rabbit, { autoAlpha: 0.94 });
@@ -169,106 +174,108 @@ export function createFairyStoryTimeline(
     .to(elements.actor, { x: -5, duration: 0.92 }, 0.72)
     .to(
       elements.chest,
-      { x: -2, rotation: -1.35, duration: 0.16, yoyo: true, repeat: 1 },
+      { x: -2, rotation: -0.35, duration: 0.14, yoyo: true, repeat: 1 },
       1.03,
     )
-    .to(elements.chestShadow, { x: -2, duration: 0.32 }, 1.03);
+    .to(elements.chestShadow, { x: -2, duration: 0.28 }, 1.03)
+    .call(() => setPose(elements.pose, "recover-breath"), undefined, 1.82)
+    .to(elements.actor, { x: 0, duration: 0.42, ease: "power2.out" }, 1.82)
+    .to(elements.chest, { x: 0, rotation: 0, duration: 0.34 }, 1.82)
+    .to(elements.chestShadow, { x: 0, duration: 0.34 }, 1.82)
+    .call(() => setPose(elements.pose, "inspect-ground"), undefined, 2.42)
+    .to(elements.actor, { y: 3, duration: 0.45, ease: "sine.inOut" }, 2.42)
+    .to({}, { duration: 0.65 });
 
-  timeline.addLabel("hipPush", 2.05);
-  addPoseSequence(timeline, elements.pose, fairyStorySequences.hipPreparation, {
-    start: 2.05,
-    frameDuration: 0.38,
-  });
-  addPoseSequence(timeline, elements.pose, fairyStorySequences.hipPush, {
-    start: 3.57,
-    frameDuration: 0.32,
-  });
-  timeline
-    .to(elements.actor, { x: -7, duration: 0.75 }, 3.55)
-    .to(
-      elements.chest,
-      { x: -5, rotation: -1.55, duration: 0.42, ease: "power3.out" },
-      3.95,
-    )
-    .to(elements.chestShadow, { x: -5, scaleX: 0.98, duration: 0.42 }, 3.95);
-
-  timeline.addLabel("changeSides", 5.15);
+  timeline.addLabel("changeSides", 3.45);
   addPoseSequence(timeline, elements.pose, fairyStorySequences.takeoff, {
-    start: 5.15,
-    frameDuration: 0.36,
+    start: 3.45,
+    frameDuration: 0.34,
   });
   timeline
-    .to(elements.actor, { top: "41%", x: 0, duration: 0.82, ease: "power2.out" }, 5.88)
-    .to(elements.shadow, { autoAlpha: 0.1, scale: 0.58, duration: 0.68 }, 5.88);
+    .to(
+      elements.actor,
+      { top: "40%", x: 0, y: 0, duration: 0.78, ease: "power2.out" },
+      4.16,
+    )
+    .to(elements.shadow, { autoAlpha: 0.09, scale: 0.56, duration: 0.64 }, 4.16);
 
   addPoseSequence(timeline, elements.pose, fairyStorySequences.crossToLeft, {
-    start: 6.72,
-    frameDuration: 0.4,
+    start: 4.86,
+    frameDuration: 0.38,
   });
   timeline
     .to(
       elements.actor,
       {
         left: fairyStoryLayout.close.leftActor.left,
-        top: fairyStoryLayout.close.leftActor.top,
+        top: "43%",
         x: 0,
-        duration: 1.35,
+        duration: 1.16,
         ease: "power2.inOut",
       },
-      6.82,
+      4.96,
     )
-    .to(elements.shadow, { autoAlpha: 0.45, scale: 1, duration: 0.5 }, 7.72);
+    .to(
+      elements.actor,
+      {
+        top: fairyStoryLayout.close.leftActor.top,
+        duration: 0.58,
+        ease: "power2.in",
+      },
+      6.02,
+    )
+    .to(elements.shadow, { autoAlpha: 0.45, scale: 1, duration: 0.48 }, 6.12);
 
-  timeline.addLabel("pull", 8.35);
+  timeline.addLabel("pull", 6.62);
   addPoseSequence(timeline, elements.pose, fairyStorySequences.pull, {
-    start: 8.35,
+    start: 6.62,
     frameDuration: 0.34,
   });
   timeline
-    .to(elements.actor, { x: -11, duration: 0.86, ease: "power3.out" }, 8.68)
+    .to(elements.actor, { x: -11, duration: 0.86, ease: "power3.out" }, 6.95)
     .to(
       elements.chest,
-      { x: -12, rotation: -1.8, duration: 0.72, ease: "power3.out" },
-      8.94,
+      { x: -12, rotation: 0, duration: 0.72, ease: "power3.out" },
+      7.21,
     )
-    .to(elements.chestShadow, { x: -12, duration: 0.72 }, 8.94);
+    .to(elements.chestShadow, { x: -12, duration: 0.72 }, 7.21);
 
   addPoseSequence(timeline, elements.pose, fairyStorySequences.fall, {
-    start: 9.83,
+    start: 8.1,
     frameDuration: 0.3,
   });
   timeline
     .to(
       elements.actor,
       { x: "-34%", top: "55%", duration: 0.36, ease: "power3.in" },
-      9.83,
+      8.1,
     )
-    .to(elements.actor, { y: -5, duration: 0.11, yoyo: true, repeat: 4 }, 10.2)
-    .to(elements.shadow, { scale: 1.16, autoAlpha: 0.54, duration: 0.24 }, 10.15);
+    .to(elements.actor, { y: -5, duration: 0.11, yoyo: true, repeat: 4 }, 8.47)
+    .to(elements.shadow, { scale: 1.16, autoAlpha: 0.54, duration: 0.24 }, 8.42);
 
-  timeline.addLabel("firstMagic", 11.18);
+  timeline.addLabel("firstMagic", 9.45);
   addPoseSequence(timeline, elements.pose, fairyStorySequences.firstMagic, {
-    start: 11.18,
+    start: 9.45,
     frameDuration: 0.44,
   });
   timeline
-    .to(elements.actor, { left: "47%", top: "34%", x: 0, y: 0, duration: 1.05 }, 11.48)
-    .to(elements.shadow, { autoAlpha: 0.11, scale: 0.62, duration: 0.7 }, 11.48)
+    .to(elements.actor, { left: "47%", top: "34%", x: 0, y: 0, duration: 1.05 }, 9.75)
+    .to(elements.shadow, { autoAlpha: 0.11, scale: 0.62, duration: 0.7 }, 9.75)
     .fromTo(
       elements.dust,
       { autoAlpha: 0, scale: 0.32 },
       { autoAlpha: 0.78, scale: 0.78, duration: 0.72 },
-      12.32,
+      10.59,
     )
-    .to(elements.dust, { autoAlpha: 0, duration: 0.48 }, 13.1)
+    .to(elements.dust, { autoAlpha: 0, duration: 0.48 }, 11.37)
     .to(
       elements.chest,
-      { x: -14, y: -2, rotation: -2.1, duration: 0.28, yoyo: true, repeat: 1 },
-      12.67,
+      { x: -14, y: -2, rotation: -0.4, duration: 0.28, yoyo: true, repeat: 1 },
+      10.94,
     );
 
   timeline
-    .call(() => setPose(elements.pose, "magic-hopeful"), undefined, 13.25)
+    .call(() => setPose(elements.pose, "magic-hopeful"), undefined, 11.52)
     .to(
       elements.actor,
       {
@@ -277,56 +284,56 @@ export function createFairyStoryTimeline(
         x: 0,
         duration: 0.72,
       },
-      13.5,
+      11.77,
     )
-    .to(elements.shadow, { autoAlpha: 0.45, scale: 1, duration: 0.45 }, 13.72)
-    .call(() => setPose(elements.pose, "magic-pull"), undefined, 13.68)
-    .to(elements.chest, { x: -17, duration: 0.52 }, 13.7)
-    .to(elements.chestShadow, { x: -17, duration: 0.52 }, 13.7)
-    .call(() => setPose(elements.pose, "magic-not-enough"), undefined, 14.25)
-    .call(() => setPose(elements.pose, "magic-second-pouch"), undefined, 14.78)
-    .to(elements.actor, { left: "50%", top: "31%", duration: 0.82 }, 14.62)
-    .to(elements.shadow, { autoAlpha: 0.08, scale: 0.55, duration: 0.55 }, 14.62);
+    .to(elements.shadow, { autoAlpha: 0.45, scale: 1, duration: 0.45 }, 11.99)
+    .call(() => setPose(elements.pose, "magic-pull"), undefined, 11.95)
+    .to(elements.chest, { x: -17, rotation: 0, duration: 0.52 }, 11.97)
+    .to(elements.chestShadow, { x: -17, duration: 0.52 }, 11.97)
+    .call(() => setPose(elements.pose, "magic-not-enough"), undefined, 12.52)
+    .call(() => setPose(elements.pose, "magic-second-pouch"), undefined, 13.05)
+    .to(elements.actor, { left: "50%", top: "31%", duration: 0.82 }, 12.89)
+    .to(elements.shadow, { autoAlpha: 0.08, scale: 0.55, duration: 0.55 }, 12.89);
 
-  timeline.addLabel("pouchAccident", 15.48);
+  timeline.addLabel("pouchAccident", 13.75);
   addPoseSequence(timeline, elements.pose, fairyStorySequences.pouchAccident, {
-    start: 15.48,
+    start: 13.75,
     frameDuration: 0.37,
   });
   timeline
-    .to(elements.actor, { y: -5, duration: 0.46, yoyo: true, repeat: 2 }, 15.48)
+    .to(elements.actor, { y: -5, duration: 0.46, yoyo: true, repeat: 2 }, 13.75)
     .fromTo(
       elements.dust,
       { autoAlpha: 0, scale: 0.3 },
       { autoAlpha: 1, scale: 1.5, duration: 1.0 },
-      16.4,
+      14.67,
     )
     .to(
       elements.chest,
-      { x: -13, y: -2, rotation: 0.8, duration: 0.075, yoyo: true, repeat: 11 },
-      16.55,
+      { x: -13, y: -2, rotation: 0.45, duration: 0.075, yoyo: true, repeat: 11 },
+      14.82,
     )
-    .to(elements.chest, { y: -13, scale: 1.025, duration: 0.85, ease: "power2.out" }, 17.34)
-    .to(elements.chestShadow, { autoAlpha: 0.34, scale: 0.84, duration: 0.75 }, 17.34);
+    .to(elements.chest, { y: -13, rotation: 0, scale: 1.025, duration: 0.85, ease: "power2.out" }, 15.61)
+    .to(elements.chestShadow, { autoAlpha: 0.34, scale: 0.84, duration: 0.75 }, 15.61);
 
   addPoseSequence(timeline, elements.pose, fairyStorySequences.finale, {
-    start: 17.0,
+    start: 15.27,
     frameDuration: 0.4,
   });
   timeline
     .to(
       elements.actor,
       { left: "var(--fairy-final-x)", top: "31%", x: 0, y: 0, duration: 1.0 },
-      17.68,
+      15.95,
     )
     .fromTo(
       elements.burst,
       { autoAlpha: 0, scale: 0.2 },
       { autoAlpha: 1, scale: 1.48, duration: 0.7 },
-      17.42,
+      15.69,
     )
-    .set([elements.chest, elements.chestShadow], { autoAlpha: 0 }, 18.08)
-    .to(elements.burst, { autoAlpha: 0, scale: 2.1, duration: 1.0 }, 18.12)
+    .set([elements.chest, elements.chestShadow], { autoAlpha: 0 }, 16.35)
+    .to(elements.burst, { autoAlpha: 0, scale: 2.1, duration: 1.0 }, 16.39)
     .fromTo(
       elements.letter,
       {
@@ -347,7 +354,7 @@ export function createFairyStoryTimeline(
         duration: 1.4,
         ease: "power3.out",
       },
-      18.14,
+      16.41,
     );
 
   return timeline;
