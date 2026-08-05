@@ -1,7 +1,8 @@
 Audio sources - Cumpleanos Charlott
-Retrieved: 2026-08-04
+Retrieved: 2026-08-05
 
-All files below are distributed under the corresponding Mixkit Free License:
+The ambience, rabbit, and forest-music files below are distributed under the
+corresponding Mixkit Free License:
 https://mixkit.co/license/
 
 NATURAL AMBIENCE
@@ -33,13 +34,16 @@ Local file: music-forest-curiosity.mp3
 Edits: loudness normalization, MP3 transcode.
 
 INVITATION MUSIC
-Title: Wedding 02
-Author: Francisco Alvear
-Mixkit music ID: 660
-Source collection: https://mixkit.co/free-stock-music/mood/magical/
+Title: Hiding place in the Forest
+Author: Geoff Harvey (geoffharvey)
+Pixabay music ID: 111724
+Source: https://pixabay.com/music/fantasy-dreamy-childrens-hiding-place-in-the-forest-111724/
+License: Pixabay Content License
+https://pixabay.com/service/license-summary/
 Local file: music-invitation-warm.mp3
-Edits: loudness normalization, MP3 transcode.
+Edits: gain matched to the previous invitation mix, MP3 transcode.
+Note: The source is Content ID registered. Creator credit: Geoff Harvey - Pixabay.
 
 This notice is retained in the project for provenance. Attribution is not
-required by Mixkit, but the original titles, creators, IDs, sources, and edits
+required by either license, but the original titles, creators, IDs, sources, and edits
 are documented here intentionally.
