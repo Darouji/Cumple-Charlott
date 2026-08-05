@@ -108,6 +108,9 @@ export function FairyStoryActor({
       rabbit,
     };
     const animatedElements = Object.values(elements);
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     gsap.killTweensOf(animatedElements);
 
@@ -131,7 +134,10 @@ export function FairyStoryActor({
     }
 
     if (phase === "invitation-reveal") {
-      const idle = createFairyStoryFinalIdle(elements);
+      const idle = createFairyStoryFinalIdle(elements, {
+        reducedMotion,
+        onSoundCue: (cue) => experienceAudio.play(cue),
+      });
 
       return () => idle.kill();
     }
@@ -142,9 +148,7 @@ export function FairyStoryActor({
     }
 
     const timeline = createFairyStoryTimeline(elements, {
-      reducedMotion: window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches,
+      reducedMotion,
       onSoundCue: (cue) => experienceAudio.play(cue),
       onComplete: () => onCompleteRef.current(),
     });

@@ -41,6 +41,11 @@ interface FairyStoryOptions {
   readonly onComplete: () => void;
 }
 
+interface FairyStoryFinalIdleOptions {
+  readonly reducedMotion: boolean;
+  readonly onSoundCue: (cue: ExperienceSoundCue) => void;
+}
+
 interface PixelPoint {
   readonly x: number;
   readonly y: number;
@@ -289,13 +294,14 @@ export function setFairyStoryOpening(
 
 export function createFairyStoryFinalIdle(
   elements: FairyStoryElements,
-): gsap.core.Tween {
+  options: FairyStoryFinalIdleOptions,
+): gsap.core.Timeline {
+  const airPoint = resolvePoint(elements.layer, fairyStoryLayout.air.actor);
   const finalPoint = resolveFinalActorPoint(elements);
 
-  setPoseImmediately(elements, "final-wave");
+  setPoseImmediately(elements, "burst-peek");
   gsap.set(elements.layer, { autoAlpha: 1 });
-  setActorPoint(elements, finalPoint, finalFairyScale);
-  gsap.set(elements.actor, { rotation: -0.5 });
+  setActorPoint(elements, airPoint, 1);
   gsap.set(elements.shadow, { autoAlpha: 0.04, scale: 0.44 });
   gsap.set(elements.rabbit, { autoAlpha: 0.94 });
   gsap.set(
@@ -311,14 +317,80 @@ export function createFairyStoryFinalIdle(
     { autoAlpha: 0 },
   );
 
-  return gsap.to(elements.actor, {
-    y: finalPoint.y + 3,
-    rotation: 0.55,
-    duration: 1.8,
-    ease: "sine.inOut",
-    repeat: -1,
-    yoyo: true,
+  const timeline = gsap.timeline({
+    defaults: { ease: "power2.inOut" },
   });
+
+  if (options.reducedMotion) {
+    timeline
+      .call(() => setPoseImmediately(elements, "final-wave"), undefined, 0.12)
+      .set(
+        elements.actor,
+        {
+          x: finalPoint.x,
+          y: finalPoint.y,
+          rotation: -0.5,
+          scale: finalFairyScale,
+        },
+        0.12,
+      )
+      .to({}, { duration: 0.2 }, 0.12);
+
+    return timeline;
+  }
+
+  timeline
+    .to(
+      elements.actor,
+      {
+        rotation: 1.2,
+        duration: 0.18,
+        ease: "sine.inOut",
+        repeat: 1,
+        yoyo: true,
+      },
+      0.02,
+    )
+    .call(() => options.onSoundCue("fairy-flight"), undefined, 0.28)
+    .call(
+      () => {
+        crossfadePose(elements, "fly-across", 0.3);
+        elements.pose.style.setProperty("--pose-facing", "-1");
+      },
+      undefined,
+      0.28,
+    )
+    .to(
+      elements.actor,
+      {
+        x: finalPoint.x,
+        y: finalPoint.y,
+        rotation: -0.5,
+        scale: finalFairyScale,
+        duration: 1.9,
+        ease: "power2.inOut",
+      },
+      0.34,
+    )
+    .call(
+      () => crossfadePose(elements, "final-wave", 0.34),
+      undefined,
+      1.98,
+    )
+    .to(
+      elements.actor,
+      {
+        y: finalPoint.y + 3,
+        rotation: 0.55,
+        duration: 1.8,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      },
+      2.32,
+    );
+
+  return timeline;
 }
 
 export function createFairyStoryTimeline(
@@ -334,7 +406,6 @@ export function createFairyStoryTimeline(
     fairyStoryLayout.openingIdea,
   );
   const waitIdeaPoint = resolvePoint(elements.layer, fairyStoryLayout.wait.idea);
-  const finalPoint = resolveFinalActorPoint(elements);
   const timeline = gsap.timeline({
     defaults: { ease: "power2.inOut" },
     onComplete: options.onComplete,
@@ -353,13 +424,13 @@ export function createFairyStoryTimeline(
         { autoAlpha: 1, duration: 0.35 },
         0.65,
       )
-      .call(() => setPoseImmediately(elements, "final-wave"), undefined, 1.05)
+      .call(() => setPoseImmediately(elements, "burst-peek"), undefined, 1.05)
       .set(
         elements.actor,
         {
-          x: finalPoint.x,
-          y: finalPoint.y,
-          scale: finalFairyScale,
+          x: airPoint.x,
+          y: airPoint.y,
+          scale: 1,
         },
         1.05,
       )
@@ -388,8 +459,7 @@ export function createFairyStoryTimeline(
     .call(() => options.onSoundCue("chest-glow-strong"), undefined, 17.4)
     .call(() => options.onSoundCue("chest-rumble-heavy"), undefined, 17.55)
     .call(() => options.onSoundCue("chest-open"), undefined, 19.05)
-    .call(() => options.onSoundCue("magic-burst"), undefined, 19.25)
-    .call(() => options.onSoundCue("fairy-flight"), undefined, 20.55);
+    .call(() => options.onSoundCue("magic-burst"), undefined, 19.25);
 
   timeline
     .to(
@@ -672,21 +742,18 @@ export function createFairyStoryTimeline(
       { autoAlpha: 0, duration: 0.85 },
       21.12,
     )
-    .call(() => crossfadePose(elements, "fly-across"), undefined, 20.55)
     .to(
       elements.actor,
       {
-        x: finalPoint.x,
-        y: finalPoint.y,
-        rotation: -0.5,
-        scale: finalFairyScale,
-        duration: 1.7,
-        ease: "power2.inOut",
+        rotation: 0.65,
+        duration: 0.18,
+        ease: "sine.inOut",
+        repeat: 1,
+        yoyo: true,
       },
-      20.55,
+      20.86,
     )
-    .call(() => crossfadePose(elements, "final-wave"), undefined, 21.58)
-    .to({}, { duration: 0.2 }, 22.35);
+    .to({}, { duration: 0.28 }, 21.97);
 
   return timeline;
 }

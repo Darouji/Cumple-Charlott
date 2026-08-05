@@ -23,7 +23,7 @@ export const experienceCopy = {
     prompt: "Shh… parece que el conejo quiere mostrarnos algo.",
     listening: "¿Escuchaste eso? Parece venir del claro…",
   },
-  close: "Mira… parece que está sucediendo algo.",
+  close: "Mira…",
   interaction: {
     continue: {
       coarse: "Toca para continuar",
