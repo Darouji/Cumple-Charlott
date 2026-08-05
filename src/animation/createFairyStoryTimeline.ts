@@ -6,6 +6,12 @@ import chestClosed from "../assets/props/chest-front-closed.webp";
 import chestOpen from "../assets/props/chest-front-open.webp";
 
 const finalFairyScale = 2.5012;
+const finalFairyVisibleBox = {
+  xMin: 210 / 720,
+  xMax: 510 / 720,
+  yMin: 73 / 724,
+  yMax: 620 / 724,
+};
 import {
   fairyStoryLayout,
   fairyStorySequences,
@@ -74,6 +80,45 @@ function resolvePoint(
   return {
     x: (width * selected.x) / 100,
     y: (height * selected.y) / 100,
+  };
+}
+
+function clampAxis(
+  desired: number,
+  leadingExtent: number,
+  trailingExtent: number,
+  available: number,
+): number {
+  const margin = Math.min(10, available * 0.015);
+  const minimum = leadingExtent + margin;
+  const maximum = available - trailingExtent - margin;
+
+  if (minimum > maximum) {
+    return leadingExtent;
+  }
+
+  return Math.min(maximum, Math.max(minimum, desired));
+}
+
+function resolveFinalActorPoint(elements: FairyStoryElements): PixelPoint {
+  const desired = resolvePoint(elements.layer, fairyStoryLayout.final.actor);
+  const layerBounds = elements.layer.getBoundingClientRect();
+  const layerWidth = layerBounds.width || window.innerWidth;
+  const layerHeight = layerBounds.height || window.innerHeight;
+  const actorWidth = elements.actor.offsetWidth;
+  const actorHeight = elements.actor.offsetHeight;
+  const visibleLeft =
+    actorWidth * finalFairyScale * (0.5 - finalFairyVisibleBox.xMin);
+  const visibleRight =
+    actorWidth * finalFairyScale * (finalFairyVisibleBox.xMax - 0.5);
+  const visibleTop =
+    actorHeight * finalFairyScale * (0.5 - finalFairyVisibleBox.yMin);
+  const visibleBottom =
+    actorHeight * finalFairyScale * (finalFairyVisibleBox.yMax - 0.5);
+
+  return {
+    x: clampAxis(desired.x, visibleLeft, visibleRight, layerWidth),
+    y: clampAxis(desired.y, visibleTop, visibleBottom, layerHeight),
   };
 }
 
@@ -245,7 +290,7 @@ export function setFairyStoryOpening(
 export function createFairyStoryFinalIdle(
   elements: FairyStoryElements,
 ): gsap.core.Tween {
-  const finalPoint = resolvePoint(elements.layer, fairyStoryLayout.final.actor);
+  const finalPoint = resolveFinalActorPoint(elements);
 
   setPoseImmediately(elements, "final-wave");
   gsap.set(elements.layer, { autoAlpha: 1 });
@@ -267,7 +312,7 @@ export function createFairyStoryFinalIdle(
   );
 
   return gsap.to(elements.actor, {
-    y: finalPoint.y - 6,
+    y: finalPoint.y + 3,
     rotation: 0.55,
     duration: 1.8,
     ease: "sine.inOut",
@@ -289,7 +334,7 @@ export function createFairyStoryTimeline(
     fairyStoryLayout.openingIdea,
   );
   const waitIdeaPoint = resolvePoint(elements.layer, fairyStoryLayout.wait.idea);
-  const finalPoint = resolvePoint(elements.layer, fairyStoryLayout.final.actor);
+  const finalPoint = resolveFinalActorPoint(elements);
   const timeline = gsap.timeline({
     defaults: { ease: "power2.inOut" },
     onComplete: options.onComplete,
