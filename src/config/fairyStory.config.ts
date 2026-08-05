@@ -104,7 +104,7 @@ export const fairyStoryPoseAdjustments: Partial<
   "burst-shield": { x: -0.1, y: -8.4 },
   "burst-pushback": { x: -0.1, y: -1.8 },
   "burst-peek": { x: -0.1, y: -5.2 },
-  "final-wave": { x: -0.1, y: -5.4 },
+  "final-wave": { x: -0.1, y: 0 },
 };
 
 interface ResponsivePoint {

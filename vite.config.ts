@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? "/Cumple-Charlott/" : "/",
+export default defineConfig(({ command }) => ({
+  base: command === "build" ? "/Cumple-Charlott-Web/" : "/",
   plugins: [react()],
-});
+}));
