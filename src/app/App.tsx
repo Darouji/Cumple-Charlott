@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 import { createSceneTransition } from "../animation/createSceneTransition";
+import { experienceAudio } from "../audio/experienceAudio";
 import closeStumpLandscape from "../assets/forest/fairy-close-stump-landscape.webp";
 import closeStumpPortrait from "../assets/forest/fairy-close-stump-portrait.webp";
 import stageLandscape from "../assets/forest/fairy-stage-landscape.webp";
@@ -25,6 +26,7 @@ type Destination = "glade" | "stage";
 
 export function App() {
   const [phase, setPhase] = useState<ExperiencePhase>("threshold-intro");
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const thresholdRef = useRef<HTMLPictureElement>(null);
   const gladeRef = useRef<HTMLPictureElement>(null);
   const stageRef = useRef<HTMLPictureElement>(null);
@@ -38,8 +40,18 @@ export function App() {
   const interactionLockedRef = useRef(false);
 
   useEffect(() => {
+    experienceAudio.preload();
+
+    const handleVisibilityChange = () => {
+      void experienceAudio.setDocumentHidden(document.hidden);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       timelineRef.current?.kill();
+      experienceAudio.stop();
     };
   }, []);
 
@@ -88,6 +100,7 @@ export function App() {
       gsap.killTweensOf(outgoingContent);
     }
 
+    experienceAudio.play("scene-transition");
     setPhase(destination === "glade" ? "entering-glade" : "entering-stage");
     timelineRef.current = createSceneTransition(
       { outgoingScene, incomingScene, outgoingContent, incomingContent },
@@ -109,6 +122,7 @@ export function App() {
       return;
     }
 
+    experienceAudio.play("scene-approach");
     setPhase("entering-close");
     timelineRef.current = createSceneTransition(
       { outgoingScene, incomingScene },
@@ -159,14 +173,18 @@ export function App() {
   }, [phase]);
 
   const advanceExperience = () => {
-    if (phase === "threshold-intro") {
-      if (introductionRef.current) {
     if (interactionLockedRef.current) {
       return;
     }
 
     interactionLockedRef.current = true;
 
+    if (soundEnabled) {
+      void experienceAudio.start();
+    }
+
+    if (phase === "threshold-intro") {
+      if (introductionRef.current) {
         gsap.to(introductionRef.current, {
           autoAlpha: 0,
           y: -14,
@@ -196,6 +214,12 @@ export function App() {
     }
   };
 
+  const toggleSound = () => {
+    const nextEnabled = !soundEnabled;
+    setSoundEnabled(nextEnabled);
+    void experienceAudio.setEnabled(nextEnabled);
+  };
+
   const interactionCopy =
     phase === "threshold-intro"
       ? experienceCopy.interaction.continue
@@ -219,6 +243,35 @@ export function App() {
 
   return (
     <main className={styles.app}>
+      <button
+        className={styles.soundToggle}
+        type="button"
+        onClick={toggleSound}
+        aria-label={soundEnabled ? "Silenciar sonidos" : "Activar sonidos"}
+        aria-pressed={!soundEnabled}
+        title={soundEnabled ? "Silenciar sonidos" : "Activar sonidos"}
+      >
+        <svg
+          className={styles.soundIcon}
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M4 9.25v5.5h3.5l4.25 3.55V5.7L7.5 9.25H4Z" />
+          {soundEnabled ? (
+            <>
+              <path d="M15 8.1c1.05.95 1.65 2.32 1.65 3.9s-.6 2.95-1.65 3.9" />
+              <path d="M17.7 5.75C19.55 7.3 20.65 9.5 20.65 12s-1.1 4.7-2.95 6.25" />
+            </>
+          ) : (
+            <path d="m15.3 8.4 5.2 7.2m0-7.2-5.2 7.2" />
+          )}
+        </svg>
+        <span className={styles.soundLabel}>
+          {soundEnabled ? "Sonido" : "Silencio"}
+        </span>
+      </button>
+
       <picture
         ref={thresholdRef}
         className={`${styles.forest} ${styles.threshold}`}

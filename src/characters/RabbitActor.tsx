@@ -8,6 +8,7 @@ import {
   createRabbitThresholdExit,
   type RabbitMotionElements,
 } from "../animation/createRabbitMotion";
+import { experienceAudio } from "../audio/experienceAudio";
 import rabbitAlert from "../assets/characters/rabbit-alert.webp";
 import rabbitHop from "../assets/characters/rabbit-hop.webp";
 import rabbitHopSide from "../assets/characters/rabbit-hop-side.webp";
@@ -106,6 +107,7 @@ export function RabbitActor({
     if (phase === "threshold-arrival") {
       timeline = createRabbitArrival(elements, {
         reducedMotion,
+        onSoundCue: (cue) => experienceAudio.play(cue),
         onComplete: () => callbacksRef.current.onArrivalComplete(),
       });
     } else if (phase === "threshold-ready") {
@@ -113,11 +115,13 @@ export function RabbitActor({
     } else if (phase === "threshold-exit") {
       timeline = createRabbitThresholdExit(elements, {
         reducedMotion,
+        onSoundCue: (cue) => experienceAudio.play(cue),
         onComplete: () => callbacksRef.current.onThresholdExitComplete(),
       });
     } else if (phase === "glade-journey") {
       timeline = createRabbitJourney(elements, {
         reducedMotion,
+        onSoundCue: (cue) => experienceAudio.play(cue),
         onComplete: () => callbacksRef.current.onJourneyComplete(),
       });
     } else {

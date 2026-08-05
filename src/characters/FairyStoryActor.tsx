@@ -8,6 +8,7 @@ import {
   setFairyStoryOverview,
   type FairyStoryElements,
 } from "../animation/createFairyStoryTimeline";
+import { experienceAudio } from "../audio/experienceAudio";
 import openingPose from "../assets/characters/fairy/frames-v2/magic-idea.webp";
 import rabbitPeek from "../assets/characters/rabbit-alert.webp";
 import chestClosed from "../assets/props/chest-front-closed.webp";
@@ -136,6 +137,7 @@ export function FairyStoryActor({
       reducedMotion: window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches,
+      onSoundCue: (cue) => experienceAudio.play(cue),
       onComplete: () => onCompleteRef.current(),
     });
 

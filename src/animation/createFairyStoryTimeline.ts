@@ -1,6 +1,7 @@
 import gsap from "gsap";
 
 import { setPose } from "./addPoseSequence";
+import type { ExperienceSoundCue } from "../audio/experienceAudio";
 import chestClosed from "../assets/props/chest-front-closed.webp";
 import chestOpen from "../assets/props/chest-front-open.webp";
 import {
@@ -28,6 +29,7 @@ export interface FairyStoryElements {
 
 interface FairyStoryOptions {
   readonly reducedMotion: boolean;
+  readonly onSoundCue: (cue: ExperienceSoundCue) => void;
   readonly onComplete: () => void;
 }
 
@@ -349,6 +351,8 @@ export function createFairyStoryTimeline(
 
   if (options.reducedMotion) {
     timeline
+      .call(() => options.onSoundCue("chest-open"), undefined, 0.55)
+      .call(() => options.onSoundCue("magic-burst"), undefined, 0.65)
       .call(() => showOpenChest(elements), undefined, 0.55)
       .fromTo(
         elements.burst,
@@ -375,6 +379,22 @@ export function createFairyStoryTimeline(
 
     return timeline;
   }
+
+  timeline
+    .call(() => options.onSoundCue("fairy-idea"), undefined, 1.08)
+    .call(() => options.onSoundCue("fairy-takeoff"), undefined, 2.18)
+    .call(() => options.onSoundCue("fairy-flight"), undefined, 3.43)
+    .call(() => options.onSoundCue("magic-sprinkle-soft"), undefined, 6.25)
+    .call(() => options.onSoundCue("chest-rattle-soft"), undefined, 6.55)
+    .call(() => options.onSoundCue("fairy-idea"), undefined, 12.19)
+    .call(() => options.onSoundCue("fairy-flight"), undefined, 13.15)
+    .call(() => options.onSoundCue("pouch-rustle"), undefined, 15.35)
+    .call(() => options.onSoundCue("pouch-slip"), undefined, 16.08)
+    .call(() => options.onSoundCue("magic-spill"), undefined, 17.35)
+    .call(() => options.onSoundCue("chest-rumble-heavy"), undefined, 17.55)
+    .call(() => options.onSoundCue("chest-open"), undefined, 19.05)
+    .call(() => options.onSoundCue("magic-burst"), undefined, 19.25)
+    .call(() => options.onSoundCue("fairy-flight"), undefined, 20.55);
 
   timeline
     .call(() => crossfadePose(elements, "magic-not-enough"), undefined, 0.15)

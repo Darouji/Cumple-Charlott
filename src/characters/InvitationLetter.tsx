@@ -1,9 +1,11 @@
 import {
   Fragment,
+  useEffect,
   useState,
   type CSSProperties,
 } from "react";
 
+import { experienceAudio } from "../audio/experienceAudio";
 import { invitationConfig } from "../config/invitation.config";
 import styles from "./InvitationLetter.module.css";
 
@@ -16,6 +18,31 @@ interface MagicLineProps {
   readonly className: string;
   readonly startMs: number;
   readonly stepMs?: number;
+}
+
+interface WritingAudioLine {
+  readonly text: string;
+  readonly startMs: number;
+  readonly stepMs: number;
+}
+
+function scheduleWritingAudio(lines: readonly WritingAudioLine[]) {
+  const timers: number[] = [];
+
+  lines.forEach(({ text, startMs, stepMs }) => {
+    Array.from(text).forEach((glyph, glyphIndex) => {
+      if (glyph.trim() && glyphIndex % 3 === 0) {
+        timers.push(
+          window.setTimeout(
+            () => experienceAudio.play("letter-write"),
+            startMs + glyphIndex * stepMs,
+          ),
+        );
+      }
+    });
+  });
+
+  return () => timers.forEach((timer) => window.clearTimeout(timer));
 }
 
 function MagicLine({
@@ -70,12 +97,58 @@ export function InvitationLetter() {
   const [showDetails, setShowDetails] = useState(false);
   const page = showDetails ? "details" : "announcement";
 
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      experienceAudio.play("letter-page");
+      return;
+    }
+
+    const lines: readonly WritingAudioLine[] = showDetails
+      ? [
+          { text: "Guarda esta fecha", startMs: 220, stepMs: 54 },
+          {
+            text: invitationConfig.date.display,
+            startMs: 1450,
+            stepMs: 46,
+          },
+          { text: invitationConfig.time, startMs: 3150, stepMs: 58 },
+          { text: invitationConfig.address, startMs: 4100, stepMs: 52 },
+          {
+            text: `${invitationConfig.letter.farewell} ✦`,
+            startMs: 5300,
+            stepMs: 62,
+          },
+        ]
+      : [
+          {
+            text: `✦ ${invitationConfig.letter.opening} ✦`,
+            startMs: 220,
+            stepMs: 42,
+          },
+          {
+            text: `${invitationConfig.honoree} cumple ${invitationConfig.age} años`,
+            startMs: 2300,
+            stepMs: 54,
+          },
+          {
+            text: "Y nos encantaría celebrarlo contigo.",
+            startMs: 4050,
+            stepMs: 46,
+          },
+        ];
+
+    return scheduleWritingAudio(lines);
+  }, [showDetails]);
+
   return (
     <section className={styles.layer} aria-live="polite">
       <button
         className={styles.spell}
         type="button"
-        onClick={() => setShowDetails((current) => !current)}
+        onClick={() => {
+          experienceAudio.play("letter-page");
+          setShowDetails((current) => !current);
+        }}
         aria-label={
           showDetails
             ? "Volver al anuncio de cumpleaños"
