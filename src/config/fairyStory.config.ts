@@ -3,9 +3,6 @@ import burstPushback from "../assets/characters/fairy/frames-v2/burst-pushback.w
 import burstShield from "../assets/characters/fairy/frames-v2/burst-shield.webp";
 import finalWave from "../assets/characters/fairy/frames-v2/final-wave.webp";
 import flyAcross from "../assets/characters/fairy/frames-v2/fly-across.webp";
-import hoverLow from "../assets/characters/fairy/frames-v2/hover-low.webp";
-import liftCorner from "../assets/characters/fairy/frames-v2/lift-corner.webp";
-import liftCrouch from "../assets/characters/fairy/frames-v2/lift-crouch.webp";
 import magicHopeful from "../assets/characters/fairy/frames-v2/magic-hopeful.webp";
 import magicIdea from "../assets/characters/fairy/frames-v2/magic-idea.webp";
 import magicMeasure from "../assets/characters/fairy/frames-v2/magic-measure.webp";
@@ -21,11 +18,8 @@ import takeoffLow from "../assets/characters/fairy/frames-v2/takeoff-low.webp";
 
 export const fairyStoryPoseNames = [
   "magic-idea",
-  "lift-crouch",
-  "lift-corner",
   "takeoff-low",
   "fly-across",
-  "hover-low",
   "magic-retrieve",
   "magic-measure",
   "magic-sprinkle",
@@ -46,11 +40,8 @@ export type FairyStoryPose = (typeof fairyStoryPoseNames)[number];
 
 export const fairyStoryPoses = {
   "magic-idea": magicIdea,
-  "lift-crouch": liftCrouch,
-  "lift-corner": liftCorner,
   "takeoff-low": takeoffLow,
   "fly-across": flyAcross,
-  "hover-low": hoverLow,
   "magic-retrieve": magicRetrieve,
   "magic-measure": magicMeasure,
   "magic-sprinkle": magicSprinkle,
@@ -75,7 +66,19 @@ export const fairyStorySequences = {
 
 export const fairyStoryAssetSources = Object.values(fairyStoryPoses);
 
-export const fairyStoryMirroredPoses = new Set<FairyStoryPose>();
+export const fairyStoryMirroredPoses = new Set<FairyStoryPose>([
+  "magic-retrieve",
+  "magic-measure",
+  "magic-sprinkle",
+  "magic-hopeful",
+  "magic-second-pouch",
+  "pouch-hold",
+  "pouch-slip",
+  "pouch-reach",
+  "pouch-spill",
+  "burst-shield",
+  "burst-peek",
+]);
 
 interface FairyStoryPoseAdjustment {
   readonly x?: number;
@@ -86,11 +89,8 @@ interface FairyStoryPoseAdjustment {
 export const fairyStoryPoseAdjustments: Partial<
   Record<FairyStoryPose, FairyStoryPoseAdjustment>
 > = {
-  "lift-crouch": { y: -2.5 },
-  "lift-corner": { y: -3.7 },
   "takeoff-low": { x: -0.15, y: 14.9 },
   "fly-across": { x: -0.1, y: 11.6 },
-  "hover-low": { x: -0.15, y: 6.1 },
   "magic-retrieve": { x: -0.15, y: 0.4 },
   "magic-measure": { x: -0.1, y: -7.6 },
   "magic-sprinkle": { y: -8 },
@@ -133,11 +133,6 @@ export const fairyStoryLayout = {
     chest: point(48, 53.5),
     actor: point(70, 50.5, 60, 50.5),
   },
-  overview: {
-    chest: point(56.5, 54.5, 56, 54.5),
-    actor: point(64, 53.5, 60, 53.5),
-    scale: 0.34,
-  },
   lift: {
     actor: point(70, 38.5, 60, 38.5),
   },
@@ -150,7 +145,7 @@ export const fairyStoryLayout = {
   },
   openingIdea: point(70, 39, 60, 39),
   final: {
-    actor: point(80, 23, 78, 24),
+    actor: point(73, 24, 79, 24),
   },
   frame: {
     width: 720,

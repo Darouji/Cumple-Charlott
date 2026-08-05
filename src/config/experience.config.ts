@@ -7,8 +7,6 @@ export type ExperiencePhase =
   | "glade-prompt"
   | "glade-journey"
   | "glade-listening"
-  | "entering-stage"
-  | "stage-reveal"
   | "entering-close"
   | "close-reveal"
   | "fairy-story"
@@ -25,7 +23,7 @@ export const experienceCopy = {
     prompt: "Shh… parece que el conejo quiere mostrarnos algo.",
     listening: "¿Escuchaste eso? Parece venir del claro…",
   },
-  stage: "Mira… parece que alguien necesita ayuda.",
+  close: "Mira… parece que está sucediendo algo.",
   interaction: {
     continue: {
       coarse: "Toca para continuar",
@@ -44,12 +42,10 @@ export const experienceCopy = {
 
 export function getActiveScene(phase: ExperiencePhase): SceneId {
   if (
-    phase === "stage-reveal" ||
     phase === "entering-close" ||
     phase === "close-reveal" ||
     phase === "fairy-story" ||
-    phase === "invitation-reveal" ||
-    phase === "entering-stage"
+    phase === "invitation-reveal"
   ) {
     return "stage";
   }

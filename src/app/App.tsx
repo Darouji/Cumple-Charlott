@@ -5,8 +5,6 @@ import { createSceneTransition } from "../animation/createSceneTransition";
 import { experienceAudio } from "../audio/experienceAudio";
 import closeStumpLandscape from "../assets/forest/fairy-close-stump-landscape.webp";
 import closeStumpPortrait from "../assets/forest/fairy-close-stump-portrait.webp";
-import stageLandscape from "../assets/forest/fairy-stage-landscape.webp";
-import stagePortrait from "../assets/forest/fairy-stage-portrait.webp";
 import thresholdLandscape from "../assets/forest/forest-threshold-landscape-v2.webp";
 import thresholdPortrait from "../assets/forest/forest-threshold-portrait-v2.webp";
 import gladeLandscape from "../assets/forest/hidden-glade-landscape.webp";
@@ -22,14 +20,13 @@ import {
 import { PixiScene } from "../scene/PixiScene";
 import styles from "./App.module.css";
 
-type Destination = "glade" | "stage";
+type Destination = "glade" | "close";
 
 export function App() {
   const [phase, setPhase] = useState<ExperiencePhase>("threshold-intro");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const thresholdRef = useRef<HTMLPictureElement>(null);
   const gladeRef = useRef<HTMLPictureElement>(null);
-  const stageRef = useRef<HTMLPictureElement>(null);
   const closeRef = useRef<HTMLPictureElement>(null);
   const introductionRef = useRef<HTMLElement>(null);
   const discoveryPromptRef = useRef<HTMLElement>(null);
@@ -72,7 +69,7 @@ export function App() {
       phase === "glade-listening"
     ) {
       interactionRef.current?.focus({ preventScroll: true });
-    } else if (phase === "stage-reveal") {
+    } else if (phase === "close-reveal") {
       stagePromptRef.current?.focus({ preventScroll: true });
     }
   }, [phase]);
@@ -81,13 +78,13 @@ export function App() {
     const outgoingScene =
       destination === "glade" ? thresholdRef.current : gladeRef.current;
     const incomingScene =
-      destination === "glade" ? gladeRef.current : stageRef.current;
+      destination === "glade" ? gladeRef.current : closeRef.current;
     const incomingContent =
       destination === "glade"
         ? discoveryPromptRef.current
         : stagePromptRef.current;
     const outgoingContent =
-      destination === "stage" ? (listeningPromptRef.current ?? undefined) : undefined;
+      destination === "close" ? (listeningPromptRef.current ?? undefined) : undefined;
 
     if (!outgoingScene || !incomingScene || !incomingContent) {
       interactionLockedRef.current = false;
@@ -100,8 +97,10 @@ export function App() {
       gsap.killTweensOf(outgoingContent);
     }
 
-    experienceAudio.play("scene-transition");
-    setPhase(destination === "glade" ? "entering-glade" : "entering-stage");
+    experienceAudio.play(
+      destination === "glade" ? "scene-transition" : "scene-approach",
+    );
+    setPhase(destination === "glade" ? "entering-glade" : "entering-close");
     timelineRef.current = createSceneTransition(
       { outgoingScene, incomingScene, outgoingContent, incomingContent },
       {
@@ -109,34 +108,13 @@ export function App() {
           "(prefers-reduced-motion: reduce)",
         ).matches,
         onComplete: () =>
-          setPhase(destination === "glade" ? "glade-prompt" : "stage-reveal"),
-      },
-    );
-  };
-
-  const beginCloseTransition = () => {
-    const outgoingScene = stageRef.current;
-    const incomingScene = closeRef.current;
-
-    if (!outgoingScene || !incomingScene) {
-      return;
-    }
-
-    experienceAudio.play("scene-approach");
-    setPhase("entering-close");
-    timelineRef.current = createSceneTransition(
-      { outgoingScene, incomingScene },
-      {
-        reducedMotion: window.matchMedia(
-          "(prefers-reduced-motion: reduce)",
-        ).matches,
-        onComplete: () => setPhase("close-reveal"),
+          setPhase(destination === "glade" ? "glade-prompt" : "close-reveal"),
       },
     );
   };
 
   useEffect(() => {
-    if (phase !== "stage-reveal") {
+    if (phase !== "close-reveal") {
       return;
     }
 
@@ -147,7 +125,7 @@ export function App() {
       const prompt = stagePromptRef.current;
 
       if (!prompt || reducedMotion) {
-        beginCloseTransition();
+        setPhase("fairy-story");
         return;
       }
 
@@ -156,19 +134,10 @@ export function App() {
         y: -10,
         duration: 0.45,
         ease: "power2.out",
-        onComplete: beginCloseTransition,
+        onComplete: () => setPhase("fairy-story"),
       });
-    }, reducedMotion ? 850 : 3000);
+    }, reducedMotion ? 2200 : 3000);
 
-    return () => window.clearTimeout(timeout);
-  }, [phase]);
-
-  useEffect(() => {
-    if (phase !== "close-reveal") {
-      return;
-    }
-
-    const timeout = window.setTimeout(() => setPhase("fairy-story"), 1250);
     return () => window.clearTimeout(timeout);
   }, [phase]);
 
@@ -208,7 +177,7 @@ export function App() {
 
       setPhase("glade-journey");
     } else if (phase === "glade-listening") {
-      beginSceneTransition("stage");
+      beginSceneTransition("close");
     } else {
       interactionLockedRef.current = false;
     }
@@ -291,15 +260,6 @@ export function App() {
       </picture>
 
       <picture
-        ref={stageRef}
-        className={`${styles.forest} ${styles.hiddenScene}`}
-        aria-hidden="true"
-      >
-        <source media="(min-aspect-ratio: 4 / 3)" srcSet={stageLandscape} />
-        <img src={stagePortrait} alt="" />
-      </picture>
-
-      <picture
         ref={closeRef}
         className={`${styles.forest} ${styles.closeScene} ${styles.hiddenScene}`}
         aria-hidden="true"
@@ -361,9 +321,9 @@ export function App() {
         className={`${styles.scenePrompt} ${styles.stagePrompt}`}
         tabIndex={-1}
         aria-live="polite"
-        aria-hidden={phase !== "stage-reveal"}
+        aria-hidden={phase !== "close-reveal"}
       >
-        <p>{experienceCopy.stage}</p>
+        <p>{experienceCopy.close}</p>
       </section>
 
       {interactionCopy ? (
