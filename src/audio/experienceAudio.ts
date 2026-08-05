@@ -47,10 +47,9 @@ interface NoiseOptions {
   readonly resonance?: number;
 }
 
-const AMBIENCE_VOLUME = 0.045;
-const FOREST_MUSIC_VOLUME = 0.045;
-const TENSION_MUSIC_VOLUME = 0.062;
-const INVITATION_MUSIC_VOLUME = 0.075;
+const AMBIENCE_VOLUME = 0.028;
+const MUSIC_VOLUME = 0.085;
+const TENSION_MUSIC_VOLUME = 0.094;
 const EFFECTS_VOLUME = 0.54;
 
 const rabbitLeafPaths: Record<RabbitLeafSample, string> = {
@@ -63,8 +62,7 @@ class ExperienceAudioController {
   private effectsBus: GainNode | null = null;
   private noiseBuffer: AudioBuffer | null = null;
   private ambience: HTMLAudioElement | null = null;
-  private forestMusic: HTMLAudioElement | null = null;
-  private invitationMusic: HTMLAudioElement | null = null;
+  private music: HTMLAudioElement | null = null;
   private leafSampleData = new Map<RabbitLeafSample, ArrayBuffer>();
   private leafSampleLoads = new Map<RabbitLeafSample, Promise<ArrayBuffer>>();
   private leafSampleBuffers = new Map<RabbitLeafSample, AudioBuffer>();
@@ -320,8 +318,7 @@ class ExperienceAudioController {
     });
     this.stopTransientAudio();
     this.ambience = null;
-    this.forestMusic = null;
-    this.invitationMusic = null;
+    this.music = null;
     this.leafSampleData.clear();
     this.leafSampleLoads.clear();
     this.leafSampleBuffers.clear();
@@ -370,28 +367,16 @@ class ExperienceAudioController {
     return this.ambience;
   }
 
-  private ensureForestMusic() {
-    if (this.forestMusic) {
-      return this.forestMusic;
+  private ensureMusic() {
+    if (this.music) {
+      return this.music;
     }
 
-    this.forestMusic = this.createBackgroundAudio(
-      "audio/music-forest-curiosity.mp3",
-    );
-
-    return this.forestMusic;
-  }
-
-  private ensureInvitationMusic() {
-    if (this.invitationMusic) {
-      return this.invitationMusic;
-    }
-
-    this.invitationMusic = this.createBackgroundAudio(
+    this.music = this.createBackgroundAudio(
       "audio/music-invitation-warm.mp3",
     );
 
-    return this.invitationMusic;
+    return this.music;
   }
 
   private createBackgroundAudio(path: string) {
@@ -404,15 +389,11 @@ class ExperienceAudioController {
   }
 
   private getBackgroundMedia() {
-    return [
-      this.ensureAmbience(),
-      this.ensureForestMusic(),
-      this.ensureInvitationMusic(),
-    ];
+    return [this.ensureAmbience(), this.ensureMusic()];
   }
 
   private getExistingBackgroundMedia() {
-    return [this.ambience, this.forestMusic, this.invitationMusic].filter(
+    return [this.ambience, this.music].filter(
       (media): media is HTMLAudioElement => media !== null,
     );
   }
@@ -546,37 +527,22 @@ class ExperienceAudioController {
     const changed = mood !== this.musicMood;
     this.musicMood = mood;
 
-    if (changed && mood === "invitation") {
-      this.ensureInvitationMusic().currentTime = 0;
-    }
-
-    if (this.started && this.enabled && !this.hidden) {
+    if (changed && this.started && this.enabled && !this.hidden) {
       this.applyMusicMood(mood === "invitation" ? 1900 : 720);
     }
   }
 
   private applyMusicMood(duration: number) {
-    const forestTarget =
-      this.musicMood === "invitation"
-        ? 0
-        : this.musicMood === "tension"
-          ? TENSION_MUSIC_VOLUME
-          : FOREST_MUSIC_VOLUME;
-    const invitationTarget =
-      this.musicMood === "invitation" ? INVITATION_MUSIC_VOLUME : 0;
+    const musicTarget =
+      this.musicMood === "tension" ? TENSION_MUSIC_VOLUME : MUSIC_VOLUME;
     const ambienceTarget =
       this.musicMood === "invitation"
-        ? AMBIENCE_VOLUME * 0.72
+        ? AMBIENCE_VOLUME * 0.82
         : this.musicMood === "tension"
-          ? AMBIENCE_VOLUME * 0.82
+          ? AMBIENCE_VOLUME * 0.9
           : AMBIENCE_VOLUME;
 
-    this.fadeMediaTo(this.ensureForestMusic(), forestTarget, duration);
-    this.fadeMediaTo(
-      this.ensureInvitationMusic(),
-      invitationTarget,
-      duration,
-    );
+    this.fadeMediaTo(this.ensureMusic(), musicTarget, duration);
     this.fadeMediaTo(this.ensureAmbience(), ambienceTarget, duration);
   }
 
