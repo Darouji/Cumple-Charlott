@@ -9,6 +9,75 @@
     linear-gradient(180deg, var(--color-forest-800) 0%, var(--color-forest-950) 76%);
 }
 
+.soundToggle {
+  position: absolute;
+  top: max(0.85rem, env(safe-area-inset-top));
+  left: max(0.85rem, env(safe-area-inset-left));
+  z-index: calc(var(--z-interface) + 4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(246 215 123 / 28%);
+  border-radius: var(--radius-round);
+  color: var(--color-text-primary);
+  background: rgb(3 18 14 / 58%);
+  box-shadow:
+    0 0.5rem 1.75rem rgb(0 0 0 / 22%),
+    inset 0 0 1.25rem rgb(168 230 186 / 5%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color var(--duration-normal) var(--ease-natural),
+    background var(--duration-normal) var(--ease-natural),
+    opacity var(--duration-normal) var(--ease-natural),
+    transform var(--duration-normal) var(--ease-natural);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.soundToggle:hover {
+  border-color: rgb(246 215 123 / 52%);
+  background: rgb(5 28 21 / 74%);
+  transform: translateY(-1px);
+}
+
+.soundToggle:focus-visible {
+  outline: 2px solid var(--color-magic-gold-soft);
+  outline-offset: 3px;
+}
+
+.soundToggle[aria-pressed="true"] {
+  opacity: 0.72;
+}
+
+.soundIcon {
+  width: 1.12rem;
+  height: 1.12rem;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.soundIcon path {
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.65;
+}
+
+.soundIcon path:first-child {
+  fill: currentcolor;
+  stroke: none;
+}
+
+.soundLabel {
+  font-size: 0.69rem;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
 .forest {
   position: absolute;
   z-index: var(--z-scene);

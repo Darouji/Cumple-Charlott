@@ -1,5 +1,7 @@
 import gsap from "gsap";
 
+import type { ExperienceSoundCue } from "../audio/experienceAudio";
+
 export interface RabbitPoseElements {
   readonly alert: HTMLElement;
   readonly hopSide: HTMLElement;
@@ -19,6 +21,12 @@ export interface RabbitMotionElements {
 interface RabbitMotionOptions {
   readonly reducedMotion: boolean;
   readonly onComplete?: () => void;
+  readonly onSoundCue?: (
+    cue: Extract<
+      ExperienceSoundCue,
+      "rabbit-hop" | "rabbit-land" | "rabbit-look"
+    >,
+  ) => void;
 }
 
 interface Point {
@@ -83,13 +91,15 @@ function addHop(
   to: Point,
   apexHeight: number,
   landingPose: HTMLElement,
-  airbornePose: HTMLElement = elements.poses.hopAway,
-  bodyTilt = 2,
+  airbornePose: HTMLElement,
+  bodyTilt: number,
+  onSoundCue: Required<RabbitMotionOptions>["onSoundCue"],
 ) {
   const midpointX = (from.x + to.x) / 2;
   const midpointGround = (from.ground + to.ground) / 2;
   const midpointScale = (from.scale + to.scale) / 2;
 
+  timeline.call(() => onSoundCue("rabbit-hop"));
   showPose(timeline, elements.poses, airbornePose);
   timeline
     .to(elements.anchor, {
@@ -140,6 +150,7 @@ function addHop(
       },
       "<",
     );
+  timeline.call(() => onSoundCue("rabbit-land"));
   showPose(timeline, elements.poses, landingPose);
   timeline
     .to(elements.body, {
@@ -209,6 +220,7 @@ export function createRabbitArrival(
   setGroundedState(timeline, elements, start);
   showPose(timeline, elements.poses, elements.poses.hopSide);
 
+  timeline.call(() => options.onSoundCue("rabbit-hop"));
   const firstMidX = (start.x + firstLanding.x) / 2;
   const firstMidGround = (start.ground + firstLanding.ground) / 2;
   timeline
@@ -258,6 +270,7 @@ export function createRabbitArrival(
       },
       "<",
     );
+  timeline.call(() => options.onSoundCue("rabbit-land"));
   showPose(timeline, elements.poses, elements.poses.landSide);
   timeline
     .to(elements.body, { scaleX: 1.055, scaleY: 0.9, duration: 0.08 })
@@ -270,6 +283,7 @@ export function createRabbitArrival(
 
   const secondMidX = (firstLanding.x + finalLanding.x) / 2;
   const secondMidGround = (firstLanding.ground + finalLanding.ground) / 2;
+  timeline.call(() => options.onSoundCue("rabbit-hop"));
   showPose(timeline, elements.poses, elements.poses.hopSide);
   timeline
     .to(elements.anchor, {
@@ -318,6 +332,7 @@ export function createRabbitArrival(
       },
       "<",
     );
+  timeline.call(() => options.onSoundCue("rabbit-land"));
   showPose(timeline, elements.poses, elements.poses.landSide);
   timeline
     .to(elements.body, { scaleX: 1.05, scaleY: 0.92, duration: 0.08 })
@@ -328,6 +343,7 @@ export function createRabbitArrival(
       ease: "back.out(2)",
     });
   showPose(timeline, elements.poses, elements.poses.alert);
+  timeline.call(() => options.onSoundCue("rabbit-look"));
   timeline.fromTo(
     elements.body,
     { rotation: -1.2 },
@@ -367,6 +383,7 @@ export function createRabbitThresholdExit(
     elements.poses.landSide,
     elements.poses.hopSide,
     1.5,
+    options.onSoundCue,
   );
   timeline.to({}, { duration: 0.1 });
   addHop(
@@ -378,6 +395,7 @@ export function createRabbitThresholdExit(
     elements.poses.landAway,
     elements.poses.hopAway,
     1,
+    options.onSoundCue,
   );
   timeline.to([elements.anchor, elements.shadow], {
     autoAlpha: 0,
@@ -408,7 +426,17 @@ export function createRabbitJourney(
 
   setGroundedState(timeline, elements, start);
   showPose(timeline, elements.poses, elements.poses.hopAway);
-  addHop(timeline, elements, start, firstLanding, 8, elements.poses.landAway);
+  addHop(
+    timeline,
+    elements,
+    start,
+    firstLanding,
+    8,
+    elements.poses.landAway,
+    elements.poses.hopAway,
+    2,
+    options.onSoundCue,
+  );
   addHop(
     timeline,
     elements,
@@ -416,8 +444,12 @@ export function createRabbitJourney(
     secondLanding,
     6.5,
     elements.poses.landAway,
+    elements.poses.hopAway,
+    2,
+    options.onSoundCue,
   );
 
+  timeline.call(() => options.onSoundCue("rabbit-look"));
   showPose(timeline, elements.poses, elements.poses.lookBack);
   timeline
     .to(elements.body, {
@@ -444,6 +476,9 @@ export function createRabbitJourney(
     thirdLanding,
     4.2,
     elements.poses.landAway,
+    elements.poses.hopAway,
+    2,
+    options.onSoundCue,
   );
   addHop(
     timeline,
@@ -452,6 +487,9 @@ export function createRabbitJourney(
     destination,
     2.6,
     elements.poses.landAway,
+    elements.poses.hopAway,
+    2,
+    options.onSoundCue,
   );
   timeline
     .to(elements.shadow, { autoAlpha: 0, duration: 0.2 })
