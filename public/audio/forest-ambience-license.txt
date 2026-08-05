@@ -1,8 +1,45 @@
-Forest ambience (sound no. 100)
-Author: Joseph SARDIN / LaSonotheque / BigSoundBank
-Source: https://bigsoundbank.com/forest-s0100.html
-License: CC0 1.0 (public domain)
-Duration: 54.408 seconds
+Audio sources - Cumpleanos Charlott
+Retrieved: 2026-08-04
 
-The source page explicitly permits editing, redistribution, and commercial use
-without attribution. This notice is retained in the project for provenance.
+All files below are distributed under the corresponding Mixkit Free License:
+https://mixkit.co/license/
+
+NATURAL AMBIENCE
+Title: Wind in the forest
+Mixkit sound effect ID: 1237
+Source collection: https://mixkit.co/free-sound-effects/forest/
+Local file: forest-ambience.mp3
+Edits: seamless crossfade loop, loudness normalization, mono MP3 transcode.
+
+RABBIT LEAVES
+Title: Dry leaves rustling
+Mixkit sound effect ID: 2430
+Source collection: https://mixkit.co/free-sound-effects/forest/
+Local file: rabbit-leaves-hop.mp3
+Edits: loudness normalization, mono MP3 transcode.
+
+Title: Dry leaves sound
+Mixkit sound effect ID: 2428
+Source collection: https://mixkit.co/free-sound-effects/forest/
+Local file: rabbit-leaves-land.mp3
+Edits: loudness normalization, mono MP3 transcode.
+
+FOREST MUSIC
+Title: Forest Treasure
+Author: Alejandro Magana (A. M.)
+Mixkit music ID: 138
+Source collection: https://mixkit.co/free-stock-music/mood/mysterious/
+Local file: music-forest-curiosity.mp3
+Edits: loudness normalization, MP3 transcode.
+
+INVITATION MUSIC
+Title: Wedding 02
+Author: Francisco Alvear
+Mixkit music ID: 660
+Source collection: https://mixkit.co/free-stock-music/mood/magical/
+Local file: music-invitation-warm.mp3
+Edits: loudness normalization, MP3 transcode.
+
+This notice is retained in the project for provenance. Attribution is not
+required by Mixkit, but the original titles, creators, IDs, sources, and edits
+are documented here intentionally.
