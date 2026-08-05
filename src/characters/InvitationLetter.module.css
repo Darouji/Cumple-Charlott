@@ -306,8 +306,10 @@
   max-width: 88vw;
   margin: 0;
   color: rgb(255 248 220 / 86%);
-  font-size: clamp(0.72rem, 2.8vw, 0.88rem);
-  letter-spacing: 0.09em;
+  font-size: clamp(0.95rem, 3.8vw, 1.1rem);
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  line-height: 1.35;
   text-align: center;
   text-shadow: 0 0 1rem rgb(0 0 0 / 95%);
   text-transform: uppercase;

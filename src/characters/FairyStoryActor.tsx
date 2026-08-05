@@ -111,6 +111,20 @@ export function FairyStoryActor({
 
     gsap.killTweensOf(animatedElements);
 
+    if (phase === "entering-close") {
+      setFairyStoryOpening(elements);
+      gsap.set(layer, { autoAlpha: 0 });
+
+      const entrance = gsap.to(layer, {
+        autoAlpha: 1,
+        delay: 0.55,
+        duration: 1.25,
+        ease: "power2.inOut",
+      });
+
+      return () => entrance.kill();
+    }
+
     if (phase === "close-reveal") {
       setFairyStoryOpening(elements);
       return;

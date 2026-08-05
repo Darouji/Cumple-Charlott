@@ -4,6 +4,8 @@ import { setPose } from "./addPoseSequence";
 import type { ExperienceSoundCue } from "../audio/experienceAudio";
 import chestClosed from "../assets/props/chest-front-closed.webp";
 import chestOpen from "../assets/props/chest-front-open.webp";
+
+const finalFairyScale = 1.34;
 import {
   fairyStoryLayout,
   fairyStorySequences,
@@ -247,7 +249,7 @@ export function createFairyStoryFinalIdle(
 
   setPoseImmediately(elements, "final-wave");
   gsap.set(elements.layer, { autoAlpha: 1 });
-  setActorPoint(elements, finalPoint, 0.72);
+  setActorPoint(elements, finalPoint, finalFairyScale);
   gsap.set(elements.actor, { rotation: -0.5 });
   gsap.set(elements.shadow, { autoAlpha: 0.04, scale: 0.44 });
   gsap.set(elements.rabbit, { autoAlpha: 0.94 });
@@ -312,7 +314,7 @@ export function createFairyStoryTimeline(
         {
           x: finalPoint.x,
           y: finalPoint.y,
-          scale: 0.72,
+          scale: finalFairyScale,
         },
         1.05,
       )
@@ -632,7 +634,7 @@ export function createFairyStoryTimeline(
         x: finalPoint.x,
         y: finalPoint.y,
         rotation: -0.5,
-        scale: 0.72,
+        scale: finalFairyScale,
         duration: 1.7,
         ease: "power2.inOut",
       },

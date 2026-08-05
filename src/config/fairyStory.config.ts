@@ -145,7 +145,7 @@ export const fairyStoryLayout = {
   },
   openingIdea: point(70, 39, 60, 39),
   final: {
-    actor: point(80, 23, 78, 24),
+    actor: point(73, 24, 79, 24),
   },
   frame: {
     width: 720,
