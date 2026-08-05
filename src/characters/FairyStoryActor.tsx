@@ -5,7 +5,6 @@ import {
   createFairyStoryFinalIdle,
   createFairyStoryTimeline,
   setFairyStoryOpening,
-  setFairyStoryOverview,
   type FairyStoryElements,
 } from "../animation/createFairyStoryTimeline";
 import { experienceAudio } from "../audio/experienceAudio";
@@ -111,11 +110,6 @@ export function FairyStoryActor({
     const animatedElements = Object.values(elements);
 
     gsap.killTweensOf(animatedElements);
-
-    if (phase === "stage-reveal") {
-      setFairyStoryOverview(elements);
-      return;
-    }
 
     if (phase === "close-reveal") {
       setFairyStoryOpening(elements);

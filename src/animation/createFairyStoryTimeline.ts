@@ -38,16 +38,6 @@ interface PixelPoint {
   readonly y: number;
 }
 
-const hiddenMagicElements = (
-  elements: FairyStoryElements,
-): HTMLElement[] => [
-  elements.chestGlow,
-  elements.ideaSpark,
-  elements.sprinkle,
-  elements.dust,
-  elements.burst,
-];
-
 const poseProperties = [
   "--pose-x",
   "--pose-y",
@@ -188,50 +178,6 @@ function showClosedChest(elements: FairyStoryElements): void {
 
 function showOpenChest(elements: FairyStoryElements): void {
   elements.chest.src = chestOpen;
-}
-
-export function setFairyStoryOverview(
-  elements: FairyStoryElements,
-): void {
-  const actorPoint = resolvePoint(
-    elements.layer,
-    fairyStoryLayout.overview.actor,
-  );
-  const chestPoint = selectPoint(
-    elements.layer,
-    fairyStoryLayout.overview.chest,
-  );
-
-  showClosedChest(elements);
-  setPoseImmediately(elements, "magic-idea");
-  gsap.set(elements.layer, { autoAlpha: 1 });
-  setActorPoint(elements, actorPoint, fairyStoryLayout.overview.scale);
-  gsap.set(elements.shadow, { autoAlpha: 0.3, x: 0, y: 0, scale: 0.68 });
-  gsap.set(elements.chest, {
-    autoAlpha: 1,
-    left: `${chestPoint.x}%`,
-    top: `${chestPoint.y}%`,
-    xPercent: -50,
-    yPercent: -50,
-    x: 0,
-    y: 0,
-    rotation: 0,
-    scale: fairyStoryLayout.overview.scale,
-  });
-  gsap.set(elements.chestShadow, {
-    autoAlpha: 0.48,
-    left: `${chestPoint.x}%`,
-    top: `${chestPoint.y + 4.5}%`,
-    xPercent: -50,
-    yPercent: -50,
-    x: 0,
-    y: 0,
-    rotation: 0,
-    scale: fairyStoryLayout.overview.scale,
-  });
-  gsap.set([...hiddenMagicElements(elements), elements.rabbit], {
-    autoAlpha: 0,
-  });
 }
 
 export function setFairyStoryOpening(
@@ -385,41 +331,32 @@ export function createFairyStoryTimeline(
     .call(() => options.onSoundCue("fairy-takeoff"), undefined, 2.18)
     .call(() => options.onSoundCue("fairy-flight"), undefined, 3.43)
     .call(() => options.onSoundCue("magic-sprinkle-soft"), undefined, 6.25)
+    .call(() => options.onSoundCue("chest-glow-soft"), undefined, 6.28)
     .call(() => options.onSoundCue("chest-rattle-soft"), undefined, 6.55)
     .call(() => options.onSoundCue("fairy-idea"), undefined, 12.19)
     .call(() => options.onSoundCue("fairy-flight"), undefined, 13.15)
     .call(() => options.onSoundCue("pouch-rustle"), undefined, 15.35)
     .call(() => options.onSoundCue("pouch-slip"), undefined, 16.08)
     .call(() => options.onSoundCue("magic-spill"), undefined, 17.35)
+    .call(() => options.onSoundCue("chest-glow-strong"), undefined, 17.4)
     .call(() => options.onSoundCue("chest-rumble-heavy"), undefined, 17.55)
     .call(() => options.onSoundCue("chest-open"), undefined, 19.05)
     .call(() => options.onSoundCue("magic-burst"), undefined, 19.25)
     .call(() => options.onSoundCue("fairy-flight"), undefined, 20.55);
 
   timeline
-    .call(() => crossfadePose(elements, "magic-not-enough"), undefined, 0.15)
     .to(
       elements.actor,
       {
         x: closePoint.x,
-        y: closePoint.y + 3,
-        rotation: -1.4,
-        duration: 0.6,
+        y: closePoint.y + 1,
+        rotation: -0.35,
+        duration: 0.48,
+        repeat: 1,
+        yoyo: true,
         ease: "sine.inOut",
       },
-      0.2,
-    )
-    .call(() => crossfadePose(elements, "magic-idea"), undefined, 1.05)
-    .to(
-      elements.actor,
-      {
-        x: closePoint.x,
-        y: closePoint.y - 4,
-        rotation: 1,
-        duration: 0.45,
-        ease: "back.out(2)",
-      },
-      1.05,
+      0.12,
     )
     .call(
       () => setFloatingPoint(elements.ideaSpark, openingIdeaPoint),
@@ -443,19 +380,7 @@ export function createFairyStoryTimeline(
       { autoAlpha: 0, scale: 0.75, duration: 0.5 },
       1.55,
     )
-    .to(
-      elements.actor,
-      {
-        x: closePoint.x,
-        y: closePoint.y,
-        rotation: 0,
-        duration: 0.28,
-      },
-      1.72,
-    )
-    .call(() => crossfadePose(elements, "lift-crouch"), undefined, 2.05)
-    .call(() => crossfadePose(elements, "lift-corner"), undefined, 2.5)
-    .call(() => crossfadePose(elements, "takeoff-low"), undefined, 2.95)
+    .call(() => crossfadePose(elements, "takeoff-low"), undefined, 2.05)
     .to(
       elements.actor,
       {
@@ -479,7 +404,7 @@ export function createFairyStoryTimeline(
       },
       3.43,
     )
-    .call(() => crossfadePose(elements, "hover-low"), undefined, 4.62);
+    .call(() => crossfadePose(elements, "magic-hopeful"), undefined, 4.62);
 
   addCrossfadeSequence(
     timeline,
@@ -518,7 +443,7 @@ export function createFairyStoryTimeline(
     )
     .set(elements.chest, { x: 0, rotation: 0 }, 7.22)
     .to(elements.chestGlow, { autoAlpha: 0, duration: 0.8 }, 6.95)
-    .call(() => crossfadePose(elements, "hover-low"), undefined, 7.2)
+    .call(() => crossfadePose(elements, "magic-hopeful"), undefined, 7.2)
     .to(
       elements.actor,
       {
@@ -530,7 +455,6 @@ export function createFairyStoryTimeline(
       },
       7.25,
     )
-    .call(() => crossfadePose(elements, "magic-hopeful"), undefined, 8.45)
     .to(
       elements.actor,
       {
@@ -554,13 +478,12 @@ export function createFairyStoryTimeline(
       },
       11,
     )
-    .call(() => crossfadePose(elements, "magic-idea"), undefined, 12.15)
     .to(
       elements.actor,
       {
         x: waitPoint.x,
-        y: waitPoint.y - 4,
-        rotation: 1.1,
+        y: waitPoint.y - 1,
+        rotation: 0.4,
         duration: 0.5,
         ease: "back.out(2)",
       },
@@ -600,7 +523,7 @@ export function createFairyStoryTimeline(
       },
       13.15,
     )
-    .call(() => crossfadePose(elements, "hover-low"), undefined, 14.5)
+    .call(() => crossfadePose(elements, "magic-hopeful"), undefined, 14.5)
     .call(
       () => crossfadePose(elements, "magic-second-pouch", 0.28),
       undefined,
@@ -702,6 +625,7 @@ export function createFairyStoryTimeline(
       { autoAlpha: 0, duration: 0.85 },
       21.12,
     )
+    .call(() => crossfadePose(elements, "fly-across"), undefined, 20.55)
     .to(
       elements.actor,
       {

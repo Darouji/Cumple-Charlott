@@ -8,10 +8,12 @@ export type ExperienceSoundCue =
   | "fairy-takeoff"
   | "fairy-flight"
   | "magic-sprinkle-soft"
+  | "chest-glow-soft"
   | "chest-rattle-soft"
   | "pouch-rustle"
   | "pouch-slip"
   | "magic-spill"
+  | "chest-glow-strong"
   | "chest-rumble-heavy"
   | "chest-open"
   | "magic-burst"
@@ -228,6 +230,9 @@ class ExperienceAudioController {
       case "magic-sprinkle-soft":
         this.sparkles(1.45, 0.62);
         break;
+      case "chest-glow-soft":
+        this.lightShimmer(0.9, 0.58);
+        break;
       case "chest-rattle-soft":
         this.rumble(0.76, 0.42);
         break;
@@ -261,6 +266,9 @@ class ExperienceAudioController {
         this.expectationRise(2.05);
         this.sparkles(1.65, 1);
         this.whoosh(1.3, 0.024, 2400, 680);
+        break;
+      case "chest-glow-strong":
+        this.lightShimmer(1.9, 1);
         break;
       case "chest-rumble-heavy":
         this.rumble(1.62, 1);
@@ -793,6 +801,46 @@ class ExperienceAudioController {
       filter: "bandpass",
       resonance: 1.1,
     });
+  }
+
+  private lightShimmer(duration: number, intensity: number) {
+    this.tone({
+      frequency: 784,
+      endFrequency: 1046.5,
+      duration,
+      volume: 0.011 * intensity,
+      type: "sine",
+    });
+    this.tone({
+      frequency: 1174.66,
+      endFrequency: 1567.98,
+      duration: duration * 0.88,
+      volume: 0.0065 * intensity,
+      delay: duration * 0.08,
+      type: "sine",
+    });
+    this.noise({
+      duration,
+      volume: 0.0035 * intensity,
+      frequency: 4200,
+      endFrequency: 6400,
+      filter: "bandpass",
+      resonance: 0.8,
+    });
+
+    const accents = Math.max(3, Math.round(duration * 4));
+
+    for (let index = 0; index < accents; index += 1) {
+      const frequency = 1500 + Math.random() * 1300;
+      this.tone({
+        frequency,
+        endFrequency: frequency * 1.035,
+        duration: 0.11 + Math.random() * 0.09,
+        volume: (0.004 + Math.random() * 0.003) * intensity,
+        delay: (index / accents) * duration,
+        type: "sine",
+      });
+    }
   }
 
   private rumble(duration: number, intensity: number) {
