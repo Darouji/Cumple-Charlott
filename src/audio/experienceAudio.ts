@@ -47,7 +47,7 @@ interface NoiseOptions {
   readonly resonance?: number;
 }
 
-const AMBIENCE_VOLUME = 0.055;
+const AMBIENCE_VOLUME = 0.045;
 const FOREST_MUSIC_VOLUME = 0.045;
 const TENSION_MUSIC_VOLUME = 0.062;
 const INVITATION_MUSIC_VOLUME = 0.075;

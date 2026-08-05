@@ -5,7 +5,7 @@ import type { ExperienceSoundCue } from "../audio/experienceAudio";
 import chestClosed from "../assets/props/chest-front-closed.webp";
 import chestOpen from "../assets/props/chest-front-open.webp";
 
-const finalFairyScale = 1.924;
+const finalFairyScale = 2.5012;
 import {
   fairyStoryLayout,
   fairyStorySequences,

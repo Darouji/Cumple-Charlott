@@ -34,15 +34,15 @@ Local file: music-forest-curiosity.mp3
 Edits: loudness normalization, MP3 transcode.
 
 INVITATION MUSIC
-Title: Hiding place in the Forest
-Author: Geoff Harvey (geoffharvey)
-Pixabay music ID: 111724
-Source: https://pixabay.com/music/fantasy-dreamy-childrens-hiding-place-in-the-forest-111724/
+Title: The Misty Forest of the Celestial Realm
+Author: Whatssmooth
+Pixabay music ID: 432621
+Source: https://pixabay.com/music/fantasy-dreamy-childrens-the-misty-forest-of-the-celestial-realm-432621/
 License: Pixabay Content License
 https://pixabay.com/service/license-summary/
 Local file: music-invitation-warm.mp3
 Edits: gain matched to the previous invitation mix, MP3 transcode.
-Note: The source is Content ID registered. Creator credit: Geoff Harvey - Pixabay.
+Note: The source is AI-generated. Creator credit: Music by Whatssmooth.
 
 This notice is retained in the project for provenance. Attribution is not
 required by either license, but the original titles, creators, IDs, sources, and edits
